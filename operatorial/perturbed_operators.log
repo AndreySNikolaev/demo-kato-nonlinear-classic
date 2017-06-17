@@ -1,0 +1,777 @@
+FORM by J.Vermaseren,version 3.3(Jul  9 2009) Run at: Thu Dec 22 15:49:02 2016
+    *==========================================================================
+    *   This file is part of the demos for 
+    *    "Generalization of the explicit expression for the Deprit generator 
+    *       to  Hamiltonians nonlinearly dependent on small parameter"
+    *    Andrey S. Nikolaev (Andrey.Nikolaev@rdtex.ru), 
+    *==========================================================================
+    *		Kato series for perturbed operators S_H, P_H and D_H
+    *==========================================================================
+    #define MAXORDER	"4"
+    Functions L,S,P,I,Hi
+    #do n = 0,'MAXORDER'
+     ,H'n'
+    #enddo
+    ;
+    Symbols alpha(:{'MAXORDER'}),z(:{'MAXORDER'});
+    off statistics;
+    .global
+    Global H  = H0 + 
+    #do k=1,'MAXORDER'
+     + alpha^'k'*H'k'
+    #enddo
+    ;
+    B alpha;
+    Print;
+    .store
+
+   H =
+       + alpha * ( H1 )
+
+       + alpha^2 * ( H2 )
+
+       + alpha^3 * ( H3 )
+
+       + alpha^4 * ( H4 )
+
+       + H0;
+
+    G LH=H;
+    #call toliouvillian()
+    B alpha;
+    Print;
+    .store
+
+   LH =
+       + alpha * ( L(H1) )
+
+       + alpha^2 * ( L(H2) )
+
+       + alpha^3 * ( L(H3) )
+
+       + alpha^4 * ( L(H4) )
+
+       + L(H0);
+
+    *-------------------- The unperturbed resolvent operator:
+    G RH0 = -P/z
+    #do n=0,{'MAXORDER'}
+    + z^'n'*S^{'n'+1}
+    #enddo
+    ;
+    .store
+    *-------------------- The Neumann series:
+    G LV=LH-L(H0);
+    .store
+    Global F0= RH0;
+    .store
+    #do m=1,{'MAXORDER'}
+    Global F'm'= -RH0*LV*F{'m'-1};
+    .store
+    #enddo
+    *-------------------- The perturbed resolvent:
+    write statistics;
+    *    Compute W
+    Global RH=
+    #do m=0,'MAXORDER'
+    + F'm'
+    #enddo
+    ;
+    Bracket z;
+    .store
+
+Time =       0.09 sec    Generated terms =       3842
+              RH         Terms in output =       3842
+                         Bytes used      =     149344
+    *-------------------- Perturbed Integrating, Averaging and  Quasi-nilpotent oper
+    ators:
+    Global Sh = RH[z^0];
+    Global Ph = -RH[z^-1];
+    Global Dh = -RH[z^-2];
+    B alpha;
+    Print;
+    .store
+
+   Sh =
+       + alpha * (  - S*L(H1)*S + S*S*L(H1)*P + P*L(H1)*S*S )
+
+       + alpha^2 * ( S*L(H1)*S*L(H1)*S - S*L(H1)*S*S*L(H1)*P - S*L(H1)*P*L(H1)
+         *S*S - S*L(H2)*S - S*S*L(H1)*S*L(H1)*P - S*S*L(H1)*P*L(H1)*S + S*S*L(
+         H2)*P + S*S*S*L(H1)*P*L(H1)*P - P*L(H1)*S*L(H1)*S*S - P*L(H1)*S*S*L(
+         H1)*S + P*L(H1)*S*S*S*L(H1)*P + P*L(H1)*P*L(H1)*S*S*S + P*L(H2)*S*S )
+
+       + alpha^3 * (  - S*L(H1)*S*L(H1)*S*L(H1)*S + S*L(H1)*S*L(H1)*S*S*L(H1)*
+         P + S*L(H1)*S*L(H1)*P*L(H1)*S*S + S*L(H1)*S*L(H2)*S + S*L(H1)*S*S*L(
+         H1)*S*L(H1)*P + S*L(H1)*S*S*L(H1)*P*L(H1)*S - S*L(H1)*S*S*L(H2)*P - S
+         *L(H1)*S*S*S*L(H1)*P*L(H1)*P + S*L(H1)*P*L(H1)*S*L(H1)*S*S + S*L(H1)*
+         P*L(H1)*S*S*L(H1)*S - S*L(H1)*P*L(H1)*S*S*S*L(H1)*P - S*L(H1)*P*L(H1)
+         *P*L(H1)*S*S*S - S*L(H1)*P*L(H2)*S*S + S*L(H2)*S*L(H1)*S - S*L(H2)*S*
+         S*L(H1)*P - S*L(H2)*P*L(H1)*S*S - S*L(H3)*S + S*S*L(H1)*S*L(H1)*S*L(
+         H1)*P + S*S*L(H1)*S*L(H1)*P*L(H1)*S - S*S*L(H1)*S*L(H2)*P - S*S*L(H1)
+         *S*S*L(H1)*P*L(H1)*P + S*S*L(H1)*P*L(H1)*S*L(H1)*S - S*S*L(H1)*P*L(H1
+         )*S*S*L(H1)*P - S*S*L(H1)*P*L(H1)*P*L(H1)*S*S - S*S*L(H1)*P*L(H2)*S
+          - S*S*L(H2)*S*L(H1)*P - S*S*L(H2)*P*L(H1)*S + S*S*L(H3)*P - S*S*S*L(
+         H1)*S*L(H1)*P*L(H1)*P - S*S*S*L(H1)*P*L(H1)*S*L(H1)*P - S*S*S*L(H1)*P
+         *L(H1)*P*L(H1)*S + S*S*S*L(H1)*P*L(H2)*P + S*S*S*L(H2)*P*L(H1)*P + S*
+         S*S*S*L(H1)*P*L(H1)*P*L(H1)*P + P*L(H1)*S*L(H1)*S*L(H1)*S*S + P*L(H1)
+         *S*L(H1)*S*S*L(H1)*S - P*L(H1)*S*L(H1)*S*S*S*L(H1)*P - P*L(H1)*S*L(H1
+         )*P*L(H1)*S*S*S - P*L(H1)*S*L(H2)*S*S + P*L(H1)*S*S*L(H1)*S*L(H1)*S
+          - P*L(H1)*S*S*L(H1)*S*S*L(H1)*P - P*L(H1)*S*S*L(H1)*P*L(H1)*S*S - P*
+         L(H1)*S*S*L(H2)*S - P*L(H1)*S*S*S*L(H1)*S*L(H1)*P - P*L(H1)*S*S*S*L(
+         H1)*P*L(H1)*S + P*L(H1)*S*S*S*L(H2)*P + P*L(H1)*S*S*S*S*L(H1)*P*L(H1)
+         *P - P*L(H1)*P*L(H1)*S*L(H1)*S*S*S - P*L(H1)*P*L(H1)*S*S*L(H1)*S*S - 
+         P*L(H1)*P*L(H1)*S*S*S*L(H1)*S + P*L(H1)*P*L(H1)*S*S*S*S*L(H1)*P + P*
+         L(H1)*P*L(H1)*P*L(H1)*S*S*S*S + P*L(H1)*P*L(H2)*S*S*S - P*L(H2)*S*L(
+         H1)*S*S - P*L(H2)*S*S*L(H1)*S + P*L(H2)*S*S*S*L(H1)*P + P*L(H2)*P*L(
+         H1)*S*S*S + P*L(H3)*S*S )
+
+       + alpha^4 * ( S*L(H1)*S*L(H1)*S*L(H1)*S*L(H1)*S - S*L(H1)*S*L(H1)*S*L(
+         H1)*S*S*L(H1)*P - S*L(H1)*S*L(H1)*S*L(H1)*P*L(H1)*S*S - S*L(H1)*S*L(
+         H1)*S*L(H2)*S - S*L(H1)*S*L(H1)*S*S*L(H1)*S*L(H1)*P - S*L(H1)*S*L(H1)
+         *S*S*L(H1)*P*L(H1)*S + S*L(H1)*S*L(H1)*S*S*L(H2)*P + S*L(H1)*S*L(H1)*
+         S*S*S*L(H1)*P*L(H1)*P - S*L(H1)*S*L(H1)*P*L(H1)*S*L(H1)*S*S - S*L(H1)
+         *S*L(H1)*P*L(H1)*S*S*L(H1)*S + S*L(H1)*S*L(H1)*P*L(H1)*S*S*S*L(H1)*P
+          + S*L(H1)*S*L(H1)*P*L(H1)*P*L(H1)*S*S*S + S*L(H1)*S*L(H1)*P*L(H2)*S*
+         S - S*L(H1)*S*L(H2)*S*L(H1)*S + S*L(H1)*S*L(H2)*S*S*L(H1)*P + S*L(H1)
+         *S*L(H2)*P*L(H1)*S*S + S*L(H1)*S*L(H3)*S - S*L(H1)*S*S*L(H1)*S*L(H1)*
+         S*L(H1)*P - S*L(H1)*S*S*L(H1)*S*L(H1)*P*L(H1)*S + S*L(H1)*S*S*L(H1)*S
+         *L(H2)*P + S*L(H1)*S*S*L(H1)*S*S*L(H1)*P*L(H1)*P - S*L(H1)*S*S*L(H1)*
+         P*L(H1)*S*L(H1)*S + S*L(H1)*S*S*L(H1)*P*L(H1)*S*S*L(H1)*P + S*L(H1)*S
+         *S*L(H1)*P*L(H1)*P*L(H1)*S*S + S*L(H1)*S*S*L(H1)*P*L(H2)*S + S*L(H1)*
+         S*S*L(H2)*S*L(H1)*P + S*L(H1)*S*S*L(H2)*P*L(H1)*S - S*L(H1)*S*S*L(H3)
+         *P + S*L(H1)*S*S*S*L(H1)*S*L(H1)*P*L(H1)*P + S*L(H1)*S*S*S*L(H1)*P*L(
+         H1)*S*L(H1)*P + S*L(H1)*S*S*S*L(H1)*P*L(H1)*P*L(H1)*S - S*L(H1)*S*S*S
+         *L(H1)*P*L(H2)*P - S*L(H1)*S*S*S*L(H2)*P*L(H1)*P - S*L(H1)*S*S*S*S*L(
+         H1)*P*L(H1)*P*L(H1)*P - S*L(H1)*P*L(H1)*S*L(H1)*S*L(H1)*S*S - S*L(H1)
+         *P*L(H1)*S*L(H1)*S*S*L(H1)*S + S*L(H1)*P*L(H1)*S*L(H1)*S*S*S*L(H1)*P
+          + S*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*S*S*S + S*L(H1)*P*L(H1)*S*L(H2)*S*
+         S - S*L(H1)*P*L(H1)*S*S*L(H1)*S*L(H1)*S + S*L(H1)*P*L(H1)*S*S*L(H1)*S
+         *S*L(H1)*P + S*L(H1)*P*L(H1)*S*S*L(H1)*P*L(H1)*S*S + S*L(H1)*P*L(H1)*
+         S*S*L(H2)*S + S*L(H1)*P*L(H1)*S*S*S*L(H1)*S*L(H1)*P + S*L(H1)*P*L(H1)
+         *S*S*S*L(H1)*P*L(H1)*S - S*L(H1)*P*L(H1)*S*S*S*L(H2)*P - S*L(H1)*P*L(
+         H1)*S*S*S*S*L(H1)*P*L(H1)*P + S*L(H1)*P*L(H1)*P*L(H1)*S*L(H1)*S*S*S
+          + S*L(H1)*P*L(H1)*P*L(H1)*S*S*L(H1)*S*S + S*L(H1)*P*L(H1)*P*L(H1)*S*
+         S*S*L(H1)*S - S*L(H1)*P*L(H1)*P*L(H1)*S*S*S*S*L(H1)*P - S*L(H1)*P*L(
+         H1)*P*L(H1)*P*L(H1)*S*S*S*S - S*L(H1)*P*L(H1)*P*L(H2)*S*S*S + S*L(H1)
+         *P*L(H2)*S*L(H1)*S*S + S*L(H1)*P*L(H2)*S*S*L(H1)*S - S*L(H1)*P*L(H2)*
+         S*S*S*L(H1)*P - S*L(H1)*P*L(H2)*P*L(H1)*S*S*S - S*L(H1)*P*L(H3)*S*S
+          - S*L(H2)*S*L(H1)*S*L(H1)*S + S*L(H2)*S*L(H1)*S*S*L(H1)*P + S*L(H2)*
+         S*L(H1)*P*L(H1)*S*S + S*L(H2)*S*L(H2)*S + S*L(H2)*S*S*L(H1)*S*L(H1)*P
+          + S*L(H2)*S*S*L(H1)*P*L(H1)*S - S*L(H2)*S*S*L(H2)*P - S*L(H2)*S*S*S*
+         L(H1)*P*L(H1)*P + S*L(H2)*P*L(H1)*S*L(H1)*S*S + S*L(H2)*P*L(H1)*S*S*
+         L(H1)*S - S*L(H2)*P*L(H1)*S*S*S*L(H1)*P - S*L(H2)*P*L(H1)*P*L(H1)*S*S
+         *S - S*L(H2)*P*L(H2)*S*S + S*L(H3)*S*L(H1)*S - S*L(H3)*S*S*L(H1)*P - 
+         S*L(H3)*P*L(H1)*S*S - S*L(H4)*S - S*S*L(H1)*S*L(H1)*S*L(H1)*S*L(H1)*P
+          - S*S*L(H1)*S*L(H1)*S*L(H1)*P*L(H1)*S + S*S*L(H1)*S*L(H1)*S*L(H2)*P
+          + S*S*L(H1)*S*L(H1)*S*S*L(H1)*P*L(H1)*P - S*S*L(H1)*S*L(H1)*P*L(H1)*
+         S*L(H1)*S + S*S*L(H1)*S*L(H1)*P*L(H1)*S*S*L(H1)*P + S*S*L(H1)*S*L(H1)
+         *P*L(H1)*P*L(H1)*S*S + S*S*L(H1)*S*L(H1)*P*L(H2)*S + S*S*L(H1)*S*L(H2
+         )*S*L(H1)*P + S*S*L(H1)*S*L(H2)*P*L(H1)*S - S*S*L(H1)*S*L(H3)*P + S*S
+         *L(H1)*S*S*L(H1)*S*L(H1)*P*L(H1)*P + S*S*L(H1)*S*S*L(H1)*P*L(H1)*S*L(
+         H1)*P + S*S*L(H1)*S*S*L(H1)*P*L(H1)*P*L(H1)*S - S*S*L(H1)*S*S*L(H1)*P
+         *L(H2)*P - S*S*L(H1)*S*S*L(H2)*P*L(H1)*P - S*S*L(H1)*S*S*S*L(H1)*P*L(
+         H1)*P*L(H1)*P - S*S*L(H1)*P*L(H1)*S*L(H1)*S*L(H1)*S + S*S*L(H1)*P*L(
+         H1)*S*L(H1)*S*S*L(H1)*P + S*S*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*S*S + S*S
+         *L(H1)*P*L(H1)*S*L(H2)*S + S*S*L(H1)*P*L(H1)*S*S*L(H1)*S*L(H1)*P + S*
+         S*L(H1)*P*L(H1)*S*S*L(H1)*P*L(H1)*S - S*S*L(H1)*P*L(H1)*S*S*L(H2)*P
+          - S*S*L(H1)*P*L(H1)*S*S*S*L(H1)*P*L(H1)*P + S*S*L(H1)*P*L(H1)*P*L(H1
+         )*S*L(H1)*S*S + S*S*L(H1)*P*L(H1)*P*L(H1)*S*S*L(H1)*S - S*S*L(H1)*P*
+         L(H1)*P*L(H1)*S*S*S*L(H1)*P - S*S*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S
+          - S*S*L(H1)*P*L(H1)*P*L(H2)*S*S + S*S*L(H1)*P*L(H2)*S*L(H1)*S - S*S*
+         L(H1)*P*L(H2)*S*S*L(H1)*P - S*S*L(H1)*P*L(H2)*P*L(H1)*S*S - S*S*L(H1)
+         *P*L(H3)*S + S*S*L(H2)*S*L(H1)*S*L(H1)*P + S*S*L(H2)*S*L(H1)*P*L(H1)*
+         S - S*S*L(H2)*S*L(H2)*P - S*S*L(H2)*S*S*L(H1)*P*L(H1)*P + S*S*L(H2)*P
+         *L(H1)*S*L(H1)*S - S*S*L(H2)*P*L(H1)*S*S*L(H1)*P - S*S*L(H2)*P*L(H1)*
+         P*L(H1)*S*S - S*S*L(H2)*P*L(H2)*S - S*S*L(H3)*S*L(H1)*P - S*S*L(H3)*P
+         *L(H1)*S + S*S*L(H4)*P + S*S*S*L(H1)*S*L(H1)*S*L(H1)*P*L(H1)*P + S*S*
+         S*L(H1)*S*L(H1)*P*L(H1)*S*L(H1)*P + S*S*S*L(H1)*S*L(H1)*P*L(H1)*P*L(
+         H1)*S - S*S*S*L(H1)*S*L(H1)*P*L(H2)*P - S*S*S*L(H1)*S*L(H2)*P*L(H1)*P
+          - S*S*S*L(H1)*S*S*L(H1)*P*L(H1)*P*L(H1)*P + S*S*S*L(H1)*P*L(H1)*S*L(
+         H1)*S*L(H1)*P + S*S*S*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*S - S*S*S*L(H1)*P
+         *L(H1)*S*L(H2)*P - S*S*S*L(H1)*P*L(H1)*S*S*L(H1)*P*L(H1)*P + S*S*S*L(
+         H1)*P*L(H1)*P*L(H1)*S*L(H1)*S - S*S*S*L(H1)*P*L(H1)*P*L(H1)*S*S*L(H1)
+         *P - S*S*S*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S*S - S*S*S*L(H1)*P*L(H1)*P*
+         L(H2)*S - S*S*S*L(H1)*P*L(H2)*S*L(H1)*P - S*S*S*L(H1)*P*L(H2)*P*L(H1)
+         *S + S*S*S*L(H1)*P*L(H3)*P - S*S*S*L(H2)*S*L(H1)*P*L(H1)*P - S*S*S*L(
+         H2)*P*L(H1)*S*L(H1)*P - S*S*S*L(H2)*P*L(H1)*P*L(H1)*S + S*S*S*L(H2)*P
+         *L(H2)*P + S*S*S*L(H3)*P*L(H1)*P - S*S*S*S*L(H1)*S*L(H1)*P*L(H1)*P*L(
+         H1)*P - S*S*S*S*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*P - S*S*S*S*L(H1)*P*L(
+         H1)*P*L(H1)*S*L(H1)*P - S*S*S*S*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S + S*S
+         *S*S*L(H1)*P*L(H1)*P*L(H2)*P + S*S*S*S*L(H1)*P*L(H2)*P*L(H1)*P + S*S*
+         S*S*L(H2)*P*L(H1)*P*L(H1)*P + S*S*S*S*S*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)
+         *P - P*L(H1)*S*L(H1)*S*L(H1)*S*L(H1)*S*S - P*L(H1)*S*L(H1)*S*L(H1)*S*
+         S*L(H1)*S + P*L(H1)*S*L(H1)*S*L(H1)*S*S*S*L(H1)*P + P*L(H1)*S*L(H1)*S
+         *L(H1)*P*L(H1)*S*S*S + P*L(H1)*S*L(H1)*S*L(H2)*S*S - P*L(H1)*S*L(H1)*
+         S*S*L(H1)*S*L(H1)*S + P*L(H1)*S*L(H1)*S*S*L(H1)*S*S*L(H1)*P + P*L(H1)
+         *S*L(H1)*S*S*L(H1)*P*L(H1)*S*S + P*L(H1)*S*L(H1)*S*S*L(H2)*S + P*L(H1
+         )*S*L(H1)*S*S*S*L(H1)*S*L(H1)*P + P*L(H1)*S*L(H1)*S*S*S*L(H1)*P*L(H1)
+         *S - P*L(H1)*S*L(H1)*S*S*S*L(H2)*P - P*L(H1)*S*L(H1)*S*S*S*S*L(H1)*P*
+         L(H1)*P + P*L(H1)*S*L(H1)*P*L(H1)*S*L(H1)*S*S*S + P*L(H1)*S*L(H1)*P*
+         L(H1)*S*S*L(H1)*S*S + P*L(H1)*S*L(H1)*P*L(H1)*S*S*S*L(H1)*S - P*L(H1)
+         *S*L(H1)*P*L(H1)*S*S*S*S*L(H1)*P - P*L(H1)*S*L(H1)*P*L(H1)*P*L(H1)*S*
+         S*S*S - P*L(H1)*S*L(H1)*P*L(H2)*S*S*S + P*L(H1)*S*L(H2)*S*L(H1)*S*S
+          + P*L(H1)*S*L(H2)*S*S*L(H1)*S - P*L(H1)*S*L(H2)*S*S*S*L(H1)*P - P*L(
+         H1)*S*L(H2)*P*L(H1)*S*S*S - P*L(H1)*S*L(H3)*S*S - P*L(H1)*S*S*L(H1)*S
+         *L(H1)*S*L(H1)*S + P*L(H1)*S*S*L(H1)*S*L(H1)*S*S*L(H1)*P + P*L(H1)*S*
+         S*L(H1)*S*L(H1)*P*L(H1)*S*S + P*L(H1)*S*S*L(H1)*S*L(H2)*S + P*L(H1)*S
+         *S*L(H1)*S*S*L(H1)*S*L(H1)*P + P*L(H1)*S*S*L(H1)*S*S*L(H1)*P*L(H1)*S
+          - P*L(H1)*S*S*L(H1)*S*S*L(H2)*P - P*L(H1)*S*S*L(H1)*S*S*S*L(H1)*P*L(
+         H1)*P + P*L(H1)*S*S*L(H1)*P*L(H1)*S*L(H1)*S*S + P*L(H1)*S*S*L(H1)*P*
+         L(H1)*S*S*L(H1)*S - P*L(H1)*S*S*L(H1)*P*L(H1)*S*S*S*L(H1)*P - P*L(H1)
+         *S*S*L(H1)*P*L(H1)*P*L(H1)*S*S*S - P*L(H1)*S*S*L(H1)*P*L(H2)*S*S + P*
+         L(H1)*S*S*L(H2)*S*L(H1)*S - P*L(H1)*S*S*L(H2)*S*S*L(H1)*P - P*L(H1)*S
+         *S*L(H2)*P*L(H1)*S*S - P*L(H1)*S*S*L(H3)*S + P*L(H1)*S*S*S*L(H1)*S*L(
+         H1)*S*L(H1)*P + P*L(H1)*S*S*S*L(H1)*S*L(H1)*P*L(H1)*S - P*L(H1)*S*S*S
+         *L(H1)*S*L(H2)*P - P*L(H1)*S*S*S*L(H1)*S*S*L(H1)*P*L(H1)*P + P*L(H1)*
+         S*S*S*L(H1)*P*L(H1)*S*L(H1)*S - P*L(H1)*S*S*S*L(H1)*P*L(H1)*S*S*L(H1)
+         *P - P*L(H1)*S*S*S*L(H1)*P*L(H1)*P*L(H1)*S*S - P*L(H1)*S*S*S*L(H1)*P*
+         L(H2)*S - P*L(H1)*S*S*S*L(H2)*S*L(H1)*P - P*L(H1)*S*S*S*L(H2)*P*L(H1)
+         *S + P*L(H1)*S*S*S*L(H3)*P - P*L(H1)*S*S*S*S*L(H1)*S*L(H1)*P*L(H1)*P
+          - P*L(H1)*S*S*S*S*L(H1)*P*L(H1)*S*L(H1)*P - P*L(H1)*S*S*S*S*L(H1)*P*
+         L(H1)*P*L(H1)*S + P*L(H1)*S*S*S*S*L(H1)*P*L(H2)*P + P*L(H1)*S*S*S*S*
+         L(H2)*P*L(H1)*P + P*L(H1)*S*S*S*S*S*L(H1)*P*L(H1)*P*L(H1)*P + P*L(H1)
+         *P*L(H1)*S*L(H1)*S*L(H1)*S*S*S + P*L(H1)*P*L(H1)*S*L(H1)*S*S*L(H1)*S*
+         S + P*L(H1)*P*L(H1)*S*L(H1)*S*S*S*L(H1)*S - P*L(H1)*P*L(H1)*S*L(H1)*S
+         *S*S*S*L(H1)*P - P*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*S*S*S*S - P*L(H1)*P*
+         L(H1)*S*L(H2)*S*S*S + P*L(H1)*P*L(H1)*S*S*L(H1)*S*L(H1)*S*S + P*L(H1)
+         *P*L(H1)*S*S*L(H1)*S*S*L(H1)*S - P*L(H1)*P*L(H1)*S*S*L(H1)*S*S*S*L(H1
+         )*P - P*L(H1)*P*L(H1)*S*S*L(H1)*P*L(H1)*S*S*S - P*L(H1)*P*L(H1)*S*S*
+         L(H2)*S*S + P*L(H1)*P*L(H1)*S*S*S*L(H1)*S*L(H1)*S - P*L(H1)*P*L(H1)*S
+         *S*S*L(H1)*S*S*L(H1)*P - P*L(H1)*P*L(H1)*S*S*S*L(H1)*P*L(H1)*S*S - P*
+         L(H1)*P*L(H1)*S*S*S*L(H2)*S - P*L(H1)*P*L(H1)*S*S*S*S*L(H1)*S*L(H1)*P
+          - P*L(H1)*P*L(H1)*S*S*S*S*L(H1)*P*L(H1)*S + P*L(H1)*P*L(H1)*S*S*S*S*
+         L(H2)*P + P*L(H1)*P*L(H1)*S*S*S*S*S*L(H1)*P*L(H1)*P - P*L(H1)*P*L(H1)
+         *P*L(H1)*S*L(H1)*S*S*S*S - P*L(H1)*P*L(H1)*P*L(H1)*S*S*L(H1)*S*S*S - 
+         P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*L(H1)*S*S - P*L(H1)*P*L(H1)*P*L(H1)*S*S
+         *S*S*L(H1)*S + P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*S*S*L(H1)*P + P*L(H1)*P*
+         L(H1)*P*L(H1)*P*L(H1)*S*S*S*S*S + P*L(H1)*P*L(H1)*P*L(H2)*S*S*S*S - P
+         *L(H1)*P*L(H2)*S*L(H1)*S*S*S - P*L(H1)*P*L(H2)*S*S*L(H1)*S*S - P*L(H1
+         )*P*L(H2)*S*S*S*L(H1)*S + P*L(H1)*P*L(H2)*S*S*S*S*L(H1)*P + P*L(H1)*P
+         *L(H2)*P*L(H1)*S*S*S*S + P*L(H1)*P*L(H3)*S*S*S + P*L(H2)*S*L(H1)*S*L(
+         H1)*S*S + P*L(H2)*S*L(H1)*S*S*L(H1)*S - P*L(H2)*S*L(H1)*S*S*S*L(H1)*P
+          - P*L(H2)*S*L(H1)*P*L(H1)*S*S*S - P*L(H2)*S*L(H2)*S*S + P*L(H2)*S*S*
+         L(H1)*S*L(H1)*S - P*L(H2)*S*S*L(H1)*S*S*L(H1)*P - P*L(H2)*S*S*L(H1)*P
+         *L(H1)*S*S - P*L(H2)*S*S*L(H2)*S - P*L(H2)*S*S*S*L(H1)*S*L(H1)*P - P*
+         L(H2)*S*S*S*L(H1)*P*L(H1)*S + P*L(H2)*S*S*S*L(H2)*P + P*L(H2)*S*S*S*S
+         *L(H1)*P*L(H1)*P - P*L(H2)*P*L(H1)*S*L(H1)*S*S*S - P*L(H2)*P*L(H1)*S*
+         S*L(H1)*S*S - P*L(H2)*P*L(H1)*S*S*S*L(H1)*S + P*L(H2)*P*L(H1)*S*S*S*S
+         *L(H1)*P + P*L(H2)*P*L(H1)*P*L(H1)*S*S*S*S + P*L(H2)*P*L(H2)*S*S*S - 
+         P*L(H3)*S*L(H1)*S*S - P*L(H3)*S*S*L(H1)*S + P*L(H3)*S*S*S*L(H1)*P + P
+         *L(H3)*P*L(H1)*S*S*S + P*L(H4)*S*S )
+
+       + S;
+
+   Ph =
+       + alpha * (  - S*L(H1)*P - P*L(H1)*S )
+
+       + alpha^2 * ( S*L(H1)*S*L(H1)*P + S*L(H1)*P*L(H1)*S - S*L(H2)*P - S*S*
+         L(H1)*P*L(H1)*P + P*L(H1)*S*L(H1)*S - P*L(H1)*S*S*L(H1)*P - P*L(H1)*P
+         *L(H1)*S*S - P*L(H2)*S )
+
+       + alpha^3 * (  - S*L(H1)*S*L(H1)*S*L(H1)*P - S*L(H1)*S*L(H1)*P*L(H1)*S
+          + S*L(H1)*S*L(H2)*P + S*L(H1)*S*S*L(H1)*P*L(H1)*P - S*L(H1)*P*L(H1)*
+         S*L(H1)*S + S*L(H1)*P*L(H1)*S*S*L(H1)*P + S*L(H1)*P*L(H1)*P*L(H1)*S*S
+          + S*L(H1)*P*L(H2)*S + S*L(H2)*S*L(H1)*P + S*L(H2)*P*L(H1)*S - S*L(H3
+         )*P + S*S*L(H1)*S*L(H1)*P*L(H1)*P + S*S*L(H1)*P*L(H1)*S*L(H1)*P + S*S
+         *L(H1)*P*L(H1)*P*L(H1)*S - S*S*L(H1)*P*L(H2)*P - S*S*L(H2)*P*L(H1)*P
+          - S*S*S*L(H1)*P*L(H1)*P*L(H1)*P - P*L(H1)*S*L(H1)*S*L(H1)*S + P*L(H1
+         )*S*L(H1)*S*S*L(H1)*P + P*L(H1)*S*L(H1)*P*L(H1)*S*S + P*L(H1)*S*L(H2)
+         *S + P*L(H1)*S*S*L(H1)*S*L(H1)*P + P*L(H1)*S*S*L(H1)*P*L(H1)*S - P*L(
+         H1)*S*S*L(H2)*P - P*L(H1)*S*S*S*L(H1)*P*L(H1)*P + P*L(H1)*P*L(H1)*S*
+         L(H1)*S*S + P*L(H1)*P*L(H1)*S*S*L(H1)*S - P*L(H1)*P*L(H1)*S*S*S*L(H1)
+         *P - P*L(H1)*P*L(H1)*P*L(H1)*S*S*S - P*L(H1)*P*L(H2)*S*S + P*L(H2)*S*
+         L(H1)*S - P*L(H2)*S*S*L(H1)*P - P*L(H2)*P*L(H1)*S*S - P*L(H3)*S )
+
+       + alpha^4 * ( S*L(H1)*S*L(H1)*S*L(H1)*S*L(H1)*P + S*L(H1)*S*L(H1)*S*L(
+         H1)*P*L(H1)*S - S*L(H1)*S*L(H1)*S*L(H2)*P - S*L(H1)*S*L(H1)*S*S*L(H1)
+         *P*L(H1)*P + S*L(H1)*S*L(H1)*P*L(H1)*S*L(H1)*S - S*L(H1)*S*L(H1)*P*L(
+         H1)*S*S*L(H1)*P - S*L(H1)*S*L(H1)*P*L(H1)*P*L(H1)*S*S - S*L(H1)*S*L(
+         H1)*P*L(H2)*S - S*L(H1)*S*L(H2)*S*L(H1)*P - S*L(H1)*S*L(H2)*P*L(H1)*S
+          + S*L(H1)*S*L(H3)*P - S*L(H1)*S*S*L(H1)*S*L(H1)*P*L(H1)*P - S*L(H1)*
+         S*S*L(H1)*P*L(H1)*S*L(H1)*P - S*L(H1)*S*S*L(H1)*P*L(H1)*P*L(H1)*S + S
+         *L(H1)*S*S*L(H1)*P*L(H2)*P + S*L(H1)*S*S*L(H2)*P*L(H1)*P + S*L(H1)*S*
+         S*S*L(H1)*P*L(H1)*P*L(H1)*P + S*L(H1)*P*L(H1)*S*L(H1)*S*L(H1)*S - S*
+         L(H1)*P*L(H1)*S*L(H1)*S*S*L(H1)*P - S*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*S
+         *S - S*L(H1)*P*L(H1)*S*L(H2)*S - S*L(H1)*P*L(H1)*S*S*L(H1)*S*L(H1)*P
+          - S*L(H1)*P*L(H1)*S*S*L(H1)*P*L(H1)*S + S*L(H1)*P*L(H1)*S*S*L(H2)*P
+          + S*L(H1)*P*L(H1)*S*S*S*L(H1)*P*L(H1)*P - S*L(H1)*P*L(H1)*P*L(H1)*S*
+         L(H1)*S*S - S*L(H1)*P*L(H1)*P*L(H1)*S*S*L(H1)*S + S*L(H1)*P*L(H1)*P*
+         L(H1)*S*S*S*L(H1)*P + S*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S + S*L(H1)
+         *P*L(H1)*P*L(H2)*S*S - S*L(H1)*P*L(H2)*S*L(H1)*S + S*L(H1)*P*L(H2)*S*
+         S*L(H1)*P + S*L(H1)*P*L(H2)*P*L(H1)*S*S + S*L(H1)*P*L(H3)*S - S*L(H2)
+         *S*L(H1)*S*L(H1)*P - S*L(H2)*S*L(H1)*P*L(H1)*S + S*L(H2)*S*L(H2)*P + 
+         S*L(H2)*S*S*L(H1)*P*L(H1)*P - S*L(H2)*P*L(H1)*S*L(H1)*S + S*L(H2)*P*
+         L(H1)*S*S*L(H1)*P + S*L(H2)*P*L(H1)*P*L(H1)*S*S + S*L(H2)*P*L(H2)*S
+          + S*L(H3)*S*L(H1)*P + S*L(H3)*P*L(H1)*S - S*L(H4)*P - S*S*L(H1)*S*L(
+         H1)*S*L(H1)*P*L(H1)*P - S*S*L(H1)*S*L(H1)*P*L(H1)*S*L(H1)*P - S*S*L(
+         H1)*S*L(H1)*P*L(H1)*P*L(H1)*S + S*S*L(H1)*S*L(H1)*P*L(H2)*P + S*S*L(
+         H1)*S*L(H2)*P*L(H1)*P + S*S*L(H1)*S*S*L(H1)*P*L(H1)*P*L(H1)*P - S*S*
+         L(H1)*P*L(H1)*S*L(H1)*S*L(H1)*P - S*S*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*S
+          + S*S*L(H1)*P*L(H1)*S*L(H2)*P + S*S*L(H1)*P*L(H1)*S*S*L(H1)*P*L(H1)*
+         P - S*S*L(H1)*P*L(H1)*P*L(H1)*S*L(H1)*S + S*S*L(H1)*P*L(H1)*P*L(H1)*S
+         *S*L(H1)*P + S*S*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S*S + S*S*L(H1)*P*L(H1
+         )*P*L(H2)*S + S*S*L(H1)*P*L(H2)*S*L(H1)*P + S*S*L(H1)*P*L(H2)*P*L(H1)
+         *S - S*S*L(H1)*P*L(H3)*P + S*S*L(H2)*S*L(H1)*P*L(H1)*P + S*S*L(H2)*P*
+         L(H1)*S*L(H1)*P + S*S*L(H2)*P*L(H1)*P*L(H1)*S - S*S*L(H2)*P*L(H2)*P
+          - S*S*L(H3)*P*L(H1)*P + S*S*S*L(H1)*S*L(H1)*P*L(H1)*P*L(H1)*P + S*S*
+         S*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*P + S*S*S*L(H1)*P*L(H1)*P*L(H1)*S*L(
+         H1)*P + S*S*S*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S - S*S*S*L(H1)*P*L(H1)*P
+         *L(H2)*P - S*S*S*L(H1)*P*L(H2)*P*L(H1)*P - S*S*S*L(H2)*P*L(H1)*P*L(H1
+         )*P - S*S*S*S*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*P + P*L(H1)*S*L(H1)*S*L(
+         H1)*S*L(H1)*S - P*L(H1)*S*L(H1)*S*L(H1)*S*S*L(H1)*P - P*L(H1)*S*L(H1)
+         *S*L(H1)*P*L(H1)*S*S - P*L(H1)*S*L(H1)*S*L(H2)*S - P*L(H1)*S*L(H1)*S*
+         S*L(H1)*S*L(H1)*P - P*L(H1)*S*L(H1)*S*S*L(H1)*P*L(H1)*S + P*L(H1)*S*
+         L(H1)*S*S*L(H2)*P + P*L(H1)*S*L(H1)*S*S*S*L(H1)*P*L(H1)*P - P*L(H1)*S
+         *L(H1)*P*L(H1)*S*L(H1)*S*S - P*L(H1)*S*L(H1)*P*L(H1)*S*S*L(H1)*S + P*
+         L(H1)*S*L(H1)*P*L(H1)*S*S*S*L(H1)*P + P*L(H1)*S*L(H1)*P*L(H1)*P*L(H1)
+         *S*S*S + P*L(H1)*S*L(H1)*P*L(H2)*S*S - P*L(H1)*S*L(H2)*S*L(H1)*S + P*
+         L(H1)*S*L(H2)*S*S*L(H1)*P + P*L(H1)*S*L(H2)*P*L(H1)*S*S + P*L(H1)*S*
+         L(H3)*S - P*L(H1)*S*S*L(H1)*S*L(H1)*S*L(H1)*P - P*L(H1)*S*S*L(H1)*S*
+         L(H1)*P*L(H1)*S + P*L(H1)*S*S*L(H1)*S*L(H2)*P + P*L(H1)*S*S*L(H1)*S*S
+         *L(H1)*P*L(H1)*P - P*L(H1)*S*S*L(H1)*P*L(H1)*S*L(H1)*S + P*L(H1)*S*S*
+         L(H1)*P*L(H1)*S*S*L(H1)*P + P*L(H1)*S*S*L(H1)*P*L(H1)*P*L(H1)*S*S + P
+         *L(H1)*S*S*L(H1)*P*L(H2)*S + P*L(H1)*S*S*L(H2)*S*L(H1)*P + P*L(H1)*S*
+         S*L(H2)*P*L(H1)*S - P*L(H1)*S*S*L(H3)*P + P*L(H1)*S*S*S*L(H1)*S*L(H1)
+         *P*L(H1)*P + P*L(H1)*S*S*S*L(H1)*P*L(H1)*S*L(H1)*P + P*L(H1)*S*S*S*L(
+         H1)*P*L(H1)*P*L(H1)*S - P*L(H1)*S*S*S*L(H1)*P*L(H2)*P - P*L(H1)*S*S*S
+         *L(H2)*P*L(H1)*P - P*L(H1)*S*S*S*S*L(H1)*P*L(H1)*P*L(H1)*P - P*L(H1)*
+         P*L(H1)*S*L(H1)*S*L(H1)*S*S - P*L(H1)*P*L(H1)*S*L(H1)*S*S*L(H1)*S + P
+         *L(H1)*P*L(H1)*S*L(H1)*S*S*S*L(H1)*P + P*L(H1)*P*L(H1)*S*L(H1)*P*L(H1
+         )*S*S*S + P*L(H1)*P*L(H1)*S*L(H2)*S*S - P*L(H1)*P*L(H1)*S*S*L(H1)*S*
+         L(H1)*S + P*L(H1)*P*L(H1)*S*S*L(H1)*S*S*L(H1)*P + P*L(H1)*P*L(H1)*S*S
+         *L(H1)*P*L(H1)*S*S + P*L(H1)*P*L(H1)*S*S*L(H2)*S + P*L(H1)*P*L(H1)*S*
+         S*S*L(H1)*S*L(H1)*P + P*L(H1)*P*L(H1)*S*S*S*L(H1)*P*L(H1)*S - P*L(H1)
+         *P*L(H1)*S*S*S*L(H2)*P - P*L(H1)*P*L(H1)*S*S*S*S*L(H1)*P*L(H1)*P + P*
+         L(H1)*P*L(H1)*P*L(H1)*S*L(H1)*S*S*S + P*L(H1)*P*L(H1)*P*L(H1)*S*S*L(
+         H1)*S*S + P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*L(H1)*S - P*L(H1)*P*L(H1)*P*
+         L(H1)*S*S*S*S*L(H1)*P - P*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*S - P*
+         L(H1)*P*L(H1)*P*L(H2)*S*S*S + P*L(H1)*P*L(H2)*S*L(H1)*S*S + P*L(H1)*P
+         *L(H2)*S*S*L(H1)*S - P*L(H1)*P*L(H2)*S*S*S*L(H1)*P - P*L(H1)*P*L(H2)*
+         P*L(H1)*S*S*S - P*L(H1)*P*L(H3)*S*S - P*L(H2)*S*L(H1)*S*L(H1)*S + P*
+         L(H2)*S*L(H1)*S*S*L(H1)*P + P*L(H2)*S*L(H1)*P*L(H1)*S*S + P*L(H2)*S*
+         L(H2)*S + P*L(H2)*S*S*L(H1)*S*L(H1)*P + P*L(H2)*S*S*L(H1)*P*L(H1)*S
+          - P*L(H2)*S*S*L(H2)*P - P*L(H2)*S*S*S*L(H1)*P*L(H1)*P + P*L(H2)*P*L(
+         H1)*S*L(H1)*S*S + P*L(H2)*P*L(H1)*S*S*L(H1)*S - P*L(H2)*P*L(H1)*S*S*S
+         *L(H1)*P - P*L(H2)*P*L(H1)*P*L(H1)*S*S*S - P*L(H2)*P*L(H2)*S*S + P*L(
+         H3)*S*L(H1)*S - P*L(H3)*S*S*L(H1)*P - P*L(H3)*P*L(H1)*S*S - P*L(H4)*S
+          )
+
+       + P;
+
+   Dh =
+       + alpha * ( P*L(H1)*P )
+
+       + alpha^2 * (  - S*L(H1)*P*L(H1)*P - P*L(H1)*S*L(H1)*P - P*L(H1)*P*L(H1
+         )*S + P*L(H2)*P )
+
+       + alpha^3 * ( S*L(H1)*S*L(H1)*P*L(H1)*P + S*L(H1)*P*L(H1)*S*L(H1)*P + S
+         *L(H1)*P*L(H1)*P*L(H1)*S - S*L(H1)*P*L(H2)*P - S*L(H2)*P*L(H1)*P - S*
+         S*L(H1)*P*L(H1)*P*L(H1)*P + P*L(H1)*S*L(H1)*S*L(H1)*P + P*L(H1)*S*L(
+         H1)*P*L(H1)*S - P*L(H1)*S*L(H2)*P - P*L(H1)*S*S*L(H1)*P*L(H1)*P + P*
+         L(H1)*P*L(H1)*S*L(H1)*S - P*L(H1)*P*L(H1)*S*S*L(H1)*P - P*L(H1)*P*L(
+         H1)*P*L(H1)*S*S - P*L(H1)*P*L(H2)*S - P*L(H2)*S*L(H1)*P - P*L(H2)*P*
+         L(H1)*S + P*L(H3)*P )
+
+       + alpha^4 * (  - S*L(H1)*S*L(H1)*S*L(H1)*P*L(H1)*P - S*L(H1)*S*L(H1)*P*
+         L(H1)*S*L(H1)*P - S*L(H1)*S*L(H1)*P*L(H1)*P*L(H1)*S + S*L(H1)*S*L(H1)
+         *P*L(H2)*P + S*L(H1)*S*L(H2)*P*L(H1)*P + S*L(H1)*S*S*L(H1)*P*L(H1)*P*
+         L(H1)*P - S*L(H1)*P*L(H1)*S*L(H1)*S*L(H1)*P - S*L(H1)*P*L(H1)*S*L(H1)
+         *P*L(H1)*S + S*L(H1)*P*L(H1)*S*L(H2)*P + S*L(H1)*P*L(H1)*S*S*L(H1)*P*
+         L(H1)*P - S*L(H1)*P*L(H1)*P*L(H1)*S*L(H1)*S + S*L(H1)*P*L(H1)*P*L(H1)
+         *S*S*L(H1)*P + S*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S*S + S*L(H1)*P*L(H1)*
+         P*L(H2)*S + S*L(H1)*P*L(H2)*S*L(H1)*P + S*L(H1)*P*L(H2)*P*L(H1)*S - S
+         *L(H1)*P*L(H3)*P + S*L(H2)*S*L(H1)*P*L(H1)*P + S*L(H2)*P*L(H1)*S*L(H1
+         )*P + S*L(H2)*P*L(H1)*P*L(H1)*S - S*L(H2)*P*L(H2)*P - S*L(H3)*P*L(H1)
+         *P + S*S*L(H1)*S*L(H1)*P*L(H1)*P*L(H1)*P + S*S*L(H1)*P*L(H1)*S*L(H1)*
+         P*L(H1)*P + S*S*L(H1)*P*L(H1)*P*L(H1)*S*L(H1)*P + S*S*L(H1)*P*L(H1)*P
+         *L(H1)*P*L(H1)*S - S*S*L(H1)*P*L(H1)*P*L(H2)*P - S*S*L(H1)*P*L(H2)*P*
+         L(H1)*P - S*S*L(H2)*P*L(H1)*P*L(H1)*P - S*S*S*L(H1)*P*L(H1)*P*L(H1)*P
+         *L(H1)*P - P*L(H1)*S*L(H1)*S*L(H1)*S*L(H1)*P - P*L(H1)*S*L(H1)*S*L(H1
+         )*P*L(H1)*S + P*L(H1)*S*L(H1)*S*L(H2)*P + P*L(H1)*S*L(H1)*S*S*L(H1)*P
+         *L(H1)*P - P*L(H1)*S*L(H1)*P*L(H1)*S*L(H1)*S + P*L(H1)*S*L(H1)*P*L(H1
+         )*S*S*L(H1)*P + P*L(H1)*S*L(H1)*P*L(H1)*P*L(H1)*S*S + P*L(H1)*S*L(H1)
+         *P*L(H2)*S + P*L(H1)*S*L(H2)*S*L(H1)*P + P*L(H1)*S*L(H2)*P*L(H1)*S - 
+         P*L(H1)*S*L(H3)*P + P*L(H1)*S*S*L(H1)*S*L(H1)*P*L(H1)*P + P*L(H1)*S*S
+         *L(H1)*P*L(H1)*S*L(H1)*P + P*L(H1)*S*S*L(H1)*P*L(H1)*P*L(H1)*S - P*L(
+         H1)*S*S*L(H1)*P*L(H2)*P - P*L(H1)*S*S*L(H2)*P*L(H1)*P - P*L(H1)*S*S*S
+         *L(H1)*P*L(H1)*P*L(H1)*P - P*L(H1)*P*L(H1)*S*L(H1)*S*L(H1)*S + P*L(H1
+         )*P*L(H1)*S*L(H1)*S*S*L(H1)*P + P*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*S*S
+          + P*L(H1)*P*L(H1)*S*L(H2)*S + P*L(H1)*P*L(H1)*S*S*L(H1)*S*L(H1)*P + 
+         P*L(H1)*P*L(H1)*S*S*L(H1)*P*L(H1)*S - P*L(H1)*P*L(H1)*S*S*L(H2)*P - P
+         *L(H1)*P*L(H1)*S*S*S*L(H1)*P*L(H1)*P + P*L(H1)*P*L(H1)*P*L(H1)*S*L(H1
+         )*S*S + P*L(H1)*P*L(H1)*P*L(H1)*S*S*L(H1)*S - P*L(H1)*P*L(H1)*P*L(H1)
+         *S*S*S*L(H1)*P - P*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S - P*L(H1)*P*L(
+         H1)*P*L(H2)*S*S + P*L(H1)*P*L(H2)*S*L(H1)*S - P*L(H1)*P*L(H2)*S*S*L(
+         H1)*P - P*L(H1)*P*L(H2)*P*L(H1)*S*S - P*L(H1)*P*L(H3)*S + P*L(H2)*S*
+         L(H1)*S*L(H1)*P + P*L(H2)*S*L(H1)*P*L(H1)*S - P*L(H2)*S*L(H2)*P - P*
+         L(H2)*S*S*L(H1)*P*L(H1)*P + P*L(H2)*P*L(H1)*S*L(H1)*S - P*L(H2)*P*L(
+         H1)*S*S*L(H1)*P - P*L(H2)*P*L(H1)*P*L(H1)*S*S - P*L(H2)*P*L(H2)*S - P
+         *L(H3)*S*L(H1)*P - P*L(H3)*P*L(H1)*S + P*L(H4)*P );
+
+    *=======================================================
+    *                     Properties of the perturbed Kato operators
+    on statistics;
+    .global
+    *-------------------- 
+    *    1)  P_H S_H = 0
+    *-------------------- 
+    Local  PhSh=Ph*Sh;
+    Local  ShPh=Sh*Ph;
+    id P*S=0;
+    id S*P=0;
+    id P*P=P;
+    B alpha;
+    Print;
+    .store
+
+Time =       0.18 sec    Generated terms =        430
+            PhSh         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.26 sec    Generated terms =        430
+            ShPh         Terms in output =          0
+                         Bytes used      =          2
+
+   PhSh = 0;
+
+   ShPh = 0;
+
+    *-------------------- 
+    *    2)  P_H P_H = P_H
+    *-------------------- 
+    Local  delta= Ph*Ph - Ph;
+    id P*S=0;
+    id S*P=0;
+    id P*P=P;
+    B alpha;
+    Print;
+    .store
+
+Time =       0.29 sec    Generated terms =        508
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+   delta = 0;
+
+    *-------------------- 
+    *    3)  S_H D_H = 0
+    *-------------------- 
+    Local  ShDh=Sh*Dh;
+    Local  DhSh=Dh*Sh;
+    id P*S=0;
+    id S*P=0;
+    id P*P=P;
+    B alpha;
+    Print;
+    .store
+
+Time =       0.34 sec    Generated terms =        118
+            ShDh         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.37 sec    Generated terms =        118
+            DhSh         Terms in output =          0
+                         Bytes used      =          2
+
+   ShDh = 0;
+
+   DhSh = 0;
+
+    *-------------------- 
+    *    4)  P_H D_H = D_H
+    *-------------------- 
+    Local  delta=Ph*Dh-Dh;
+    id P*S=0;
+    id S*P=0;
+    id P*P=P;
+    B alpha;
+    Print;
+    .store
+
+Time =       0.39 sec    Generated terms =        216
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+   delta = 0;
+
+    *-------------------- 
+    *    5)  P_H H = H
+    *-------------------- 
+    Local  PhH=Ph*H;
+    *
+    *     You can uncomment three following lines to take a look on unsimplified exp
+    ression:
+    *
+    *B alpha;
+    *Print;
+    *.end
+    .sort
+
+Time =       0.39 sec    Generated terms =        255
+             PhH         Terms in output =        255
+                         Bytes used      =       9880
+    *-------------------- 
+    *    		The following procedure implements simple canonical identities:
+    *-------------------- 
+    #call identities1()
+
+Time =       0.39 sec    Generated terms =        255
+             PhH         Terms in output =        255
+                         Bytes used      =       9880
+
+Time =       0.39 sec    Generated terms =        153
+             PhH         Terms in output =         33
+                         Bytes used      =       1392
+
+Time =       0.39 sec    Generated terms =         15
+             PhH         Terms in output =          5
+                         Bytes used      =        134
+
+Time =       0.39 sec    Generated terms =          5
+             PhH         Terms in output =          5
+                         Bytes used      =        134
+
+Time =       0.39 sec    Generated terms =          5
+             PhH         Terms in output =          5
+                         Bytes used      =        134
+
+Time =       0.39 sec    Generated terms =          5
+             PhH         Terms in output =          5
+                         Bytes used      =        134
+    id I=1;
+    B alpha;
+    Print;
+    .store
+
+Time =       0.39 sec    Generated terms =          5
+             PhH         Terms in output =          5
+                         Bytes used      =        122
+
+   PhH =
+       + alpha * ( H1 )
+
+       + alpha^2 * ( H2 )
+
+       + alpha^3 * ( H3 )
+
+       + alpha^4 * ( H4 )
+
+       + H0;
+
+    *-------------------- 
+    *    6)  S_H H = 0
+    *-------------------- 
+    Local  ShH=Sh*H;
+    #call identities1()
+
+Time =       0.39 sec    Generated terms =        436
+             ShH         Terms in output =        436
+                         Bytes used      =      17142
+
+Time =       0.39 sec    Generated terms =        231
+             ShH         Terms in output =         37
+                         Bytes used      =       1750
+
+Time =       0.39 sec    Generated terms =         12
+             ShH         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.39 sec    Generated terms =          0
+             ShH         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.39 sec    Generated terms =          0
+             ShH         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.39 sec    Generated terms =          0
+             ShH         Terms in output =          0
+                         Bytes used      =          2
+    id I=1;
+    B alpha;
+    Print;
+    .store
+
+Time =       0.39 sec    Generated terms =          0
+             ShH         Terms in output =          0
+                         Bytes used      =          2
+
+   ShH = 0;
+
+    *-------------------- 
+    *    7)  D_H H = 0
+    *-------------------- 
+    Local  DhH=Dh*H;
+    #call identities1()
+
+Time =       0.39 sec    Generated terms =        125
+             DhH         Terms in output =        125
+                         Bytes used      =       4930
+
+Time =       0.39 sec    Generated terms =         76
+             DhH         Terms in output =         20
+                         Bytes used      =        852
+
+Time =       0.39 sec    Generated terms =          8
+             DhH         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.39 sec    Generated terms =          0
+             DhH         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.39 sec    Generated terms =          0
+             DhH         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.39 sec    Generated terms =          0
+             DhH         Terms in output =          0
+                         Bytes used      =          2
+    id I=1;
+    B alpha;
+    Print;
+    .store
+
+Time =       0.39 sec    Generated terms =          0
+             DhH         Terms in output =          0
+                         Bytes used      =          2
+
+   DhH = 0;
+
+    
+    *-------------------- 
+    *    8)  L_H P_H = D_H
+    *-------------------- 
+    Local  delta= LH*Ph - Dh;
+    .sort
+
+Time =       0.39 sec    Generated terms =        352
+           delta         Terms in output =        352
+                         Bytes used      =      13100
+    #call identities1()
+
+Time =       0.39 sec    Generated terms =        352
+           delta         Terms in output =        352
+                         Bytes used      =      13100
+
+Time =       0.39 sec    Generated terms =        314
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.39 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.39 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.39 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.39 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+    id I=1;
+    B alpha;
+    Print;
+    .store
+
+Time =       0.39 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+   delta = 0;
+
+    *-------------------- 
+    *    9)  L_H S_H = 1-P_H
+    *-------------------- 
+    Local  delta= LH*Sh -(1-Ph);
+    .sort
+
+Time =       0.40 sec    Generated terms =        632
+           delta         Terms in output =        632
+                         Bytes used      =      23638
+    #call identities1()
+
+Time =       0.40 sec    Generated terms =        632
+           delta         Terms in output =        632
+                         Bytes used      =      23638
+
+Time =       0.42 sec    Generated terms =        586
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.42 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.42 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.42 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.42 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+    id I=1;
+    B alpha;
+    Print;
+    .store
+
+Time =       0.42 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+   delta = 0;
+
+    *-------------------- 
+    *    10)  L_H D_H = Dh^2
+    *-------------------- 
+    Local  delta= LH*Dh - Dh*Dh;
+    .sort
+
+Time =       0.43 sec    Generated terms =        184
+           delta         Terms in output =        184
+                         Bytes used      =       7358
+    #call identities1()
+
+Time =       0.43 sec    Generated terms =        184
+           delta         Terms in output =        184
+                         Bytes used      =       7358
+
+Time =       0.43 sec    Generated terms =        132
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.43 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.43 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.43 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+Time =       0.43 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+    id I=1;
+    B alpha;
+    Print;
+    .end
+
+Time =       0.43 sec    Generated terms =          0
+           delta         Terms in output =          0
+                         Bytes used      =          2
+
+   delta = 0;
+
+  0.43 sec out of 0.97 sec

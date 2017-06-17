@@ -1,0 +1,440 @@
+FORM 4.1 (Jan 13 2014) 64-bits                   Run: Thu Dec 22 16:28:15 2016
+    *==========================================================================
+    *   This file is part of the demos for 
+    *    "Generalization of the explicit expression for the Deprit generator 
+    *       to  Hamiltonians nonlinearly dependent on small parameter"
+    *    Andrey S. Nikolaev (Andrey.Nikolaev@rdtex.ru), 
+    *==========================================================================
+    #define MAXORDER	"6"
+    #define MAXREPS "10"
+    Functions L,S,P,Q,I,Op,aL
+    #do k = 0,'MAXORDER'+1
+     ,H'k'
+    #enddo
+    ;
+    Set op:L,S,P,Q,I,Op;
+    .global
+    nwrite statistics;
+    Symbols l,m,n,k,alpha(:{'MAXORDER'}),z(:{'MAXORDER'});
+    .global
+    Global H  = H0 + 
+    #do k=1,'MAXORDER'
+     + alpha^'k'*H'k'
+    #enddo
+    ;
+    B alpha;
+    Print;
+    .store
+
+   H =
+       + alpha * ( H1 )
+
+       + alpha^2 * ( H2 )
+
+       + alpha^3 * ( H3 )
+
+       + alpha^4 * ( H4 )
+
+       + alpha^5 * ( H5 )
+
+       + alpha^6 * ( H6 )
+
+       + H0;
+
+    *-------------------- 
+    *     1. The perturbed integrating operator is:
+    *-------------------- 
+    #call RH()
+
+Time =       2.60 sec    Generated terms =      44131
+             RH6       1 Terms left      =      44131
+                         Bytes used      =    3373140
+
+Time =       2.71 sec    Generated terms =      83442
+             RH6       1 Terms left      =      83442
+                         Bytes used      =    6720456
+
+Time =       2.82 sec    Generated terms =     119138
+             RH6       1 Terms left      =     119138
+                         Bytes used      =    9986996
+
+Time =       2.92 sec    Generated terms =     153970
+             RH6       1 Terms left      =     153970
+                         Bytes used      =   13141960
+
+Time =       3.03 sec    Generated terms =     187413
+             RH6       1 Terms left      =     187413
+                         Bytes used      =   16403928
+
+Time =       3.14 sec    Generated terms =     218702
+             RH6       1 Terms left      =     218702
+                         Bytes used      =   19556420
+
+Time =       3.17 sec    Generated terms =     225374
+             RH6       1 Terms left      =     225374
+                         Bytes used      =   20227288
+
+Time =       3.29 sec    Generated terms =     225374
+             RH6         Terms in output =     225374
+                         Bytes used      =   18025988
+    G Sh=RH'MAXORDER'[z^0];
+    .store
+    *-------------------- 
+    *     2. dH/dalpha is:
+    *-------------------- 
+    G dHdalpha=H;
+    id alpha^n? = n*alpha^(n-1);
+    .store
+    *-------------------- 
+    *     3. The explicit expression for generator 
+    *         W=S_H dH/dalpha
+    *-------------------- 
+    G W=Sh*dHdalpha;
+    B alpha;
+    .store
+    *--------------------
+    *     4. U_G up to alpha^MAXORDER:
+    *--------------------
+    #call U(W,demo1)
+
+Time =       4.41 sec    Generated terms =       4919
+          demo1U         Terms in output =       4919
+                         Bytes used      =     586964
+    Global U =demo1U; 
+    B alpha;
+    .store
+    *--------------------
+    *     5. The transformed Hamiltonian:
+    *--------------------
+    Global HH= U*H;
+    B alpha;
+    *Print;
+    .sort
+    #call identities4()
+    .sort
+    #call identities4()
+    .sort
+    .sort
+    #call identities3()
+    write statistics;
+    id P*L(H1)*S*S*H1*I=0;
+    id P*L(H2)*S*S*H2*I=0;
+    id P*L(H2)*S*H1*I=P*L(H1)*S*H2*I;
+    id P*L(H3)*S*H1*I=P*L(H1)*S*H3*I;
+    id I=1;
+    B alpha;
+    Print;
+    .end
+
+Time =       6.14 sec    Generated terms =        485
+              HH         Terms in output =        475
+                         Bytes used      =      31992
+
+   HH =
+       + alpha * ( P*H1 )
+
+       + alpha^2 * (  - 1/2*P*L(H1)*S*H1 + P*H2 )
+
+       + alpha^3 * ( 1/3*P*L(H1)*S*L(H1)*S*H1 - 1/6*P*L(H1)*S*S*L(H1)*P*H1 - P
+         *L(H1)*S*H2 + P*H3 )
+
+       + alpha^4 * (  - 1/4*P*L(H1)*S*L(H1)*S*L(H1)*S*H1 + 1/6*P*L(H1)*S*L(H1)
+         *S*S*L(H1)*P*H1 + 1/2*P*L(H1)*S*L(H1)*S*H2 + 1/4*P*L(H1)*S*L(H2)*S*H1
+          + 1/12*P*L(H1)*S*S*L(H1)*S*L(H1)*P*H1 + 1/8*P*L(H1)*S*S*L(H1)*P*L(H1
+         )*S*H1 - 1/4*P*L(H1)*S*S*L(H1)*P*H2 - 1/12*P*L(H1)*S*S*L(H2)*P*H1 - P
+         *L(H1)*S*H3 + 1/4*P*L(H1)*P*L(H1)*S*L(H1)*S*S*H1 + 1/4*P*L(H1)*P*L(H1
+         )*S*S*L(H1)*S*H1 - 1/6*P*L(H1)*P*L(H1)*S*S*S*L(H1)*P*H1 - 1/2*P*L(H1)
+         *P*L(H1)*S*S*H2 - 1/4*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*H1 - 1/4*P*L(H1)*
+         P*L(H2)*S*S*H1 + 1/4*P*L(H2)*S*L(H1)*S*H1 - 1/6*P*L(H2)*S*S*L(H1)*P*
+         H1 - 1/2*P*L(H2)*S*H2 + P*H4 )
+
+       + alpha^5 * ( 1/5*P*L(H1)*S*L(H1)*S*L(H1)*S*L(H1)*S*H1 - 3/20*P*L(H1)*S
+         *L(H1)*S*L(H1)*S*S*L(H1)*P*H1 - 2/5*P*L(H1)*S*L(H1)*S*L(H1)*S*H2 - 1/
+         5*P*L(H1)*S*L(H1)*S*L(H2)*S*H1 - 1/10*P*L(H1)*S*L(H1)*S*S*L(H1)*S*L(
+         H1)*P*H1 - 2/15*P*L(H1)*S*L(H1)*S*S*L(H1)*P*L(H1)*S*H1 + 4/15*P*L(H1)
+         *S*L(H1)*S*S*L(H1)*P*H2 + 1/10*P*L(H1)*S*L(H1)*S*S*L(H2)*P*H1 + 3/5*P
+         *L(H1)*S*L(H1)*S*H3 - 1/5*P*L(H1)*S*L(H1)*P*L(H1)*S*L(H1)*S*S*H1 - 1/
+         5*P*L(H1)*S*L(H1)*P*L(H1)*S*S*L(H1)*S*H1 + 3/20*P*L(H1)*S*L(H1)*P*L(
+         H1)*S*S*S*L(H1)*P*H1 + 2/5*P*L(H1)*S*L(H1)*P*L(H1)*S*S*H2 + 1/5*P*L(
+         H1)*S*L(H1)*P*L(H1)*P*L(H1)*S*S*S*H1 + 1/5*P*L(H1)*S*L(H1)*P*L(H2)*S*
+         S*H1 - 1/5*P*L(H1)*S*L(H2)*S*L(H1)*S*H1 + 3/20*P*L(H1)*S*L(H2)*S*S*L(
+         H1)*P*H1 + 2/5*P*L(H1)*S*L(H2)*S*H2 + 1/5*P*L(H1)*S*L(H3)*S*H1 - 1/20
+         *P*L(H1)*S*S*L(H1)*S*L(H1)*S*L(H1)*P*H1 - 1/15*P*L(H1)*S*S*L(H1)*S*L(
+         H1)*P*L(H1)*S*H1 + 2/15*P*L(H1)*S*S*L(H1)*S*L(H1)*P*H2 + 1/20*P*L(H1)
+         *S*S*L(H1)*S*L(H2)*P*H1 - 1/10*P*L(H1)*S*S*L(H1)*P*L(H1)*S*L(H1)*S*H1
+          + 3/40*P*L(H1)*S*S*L(H1)*P*L(H1)*S*S*L(H1)*P*H1 + 3/10*P*L(H1)*S*S*
+         L(H1)*P*L(H1)*S*H2 - 3/10*P*L(H1)*S*S*L(H1)*P*H3 + 1/20*P*L(H1)*S*S*
+         L(H2)*S*L(H1)*P*H1 + 1/15*P*L(H1)*S*S*L(H2)*P*L(H1)*S*H1 - 2/15*P*L(
+         H1)*S*S*L(H2)*P*H2 - 1/20*P*L(H1)*S*S*L(H3)*P*H1 + 1/20*P*L(H1)*S*S*S
+         *L(H1)*P*L(H1)*S*L(H1)*P*H1 + 1/15*P*L(H1)*S*S*S*L(H1)*P*L(H1)*P*L(H1
+         )*S*H1 - 2/15*P*L(H1)*S*S*S*L(H1)*P*L(H1)*P*H2 - 1/20*P*L(H1)*S*S*S*
+         L(H1)*P*L(H2)*P*H1 - 4/5*P*L(H1)*S*H4 - 1/5*P*L(H1)*P*L(H1)*S*L(H1)*S
+         *L(H1)*S*S*H1 - 1/5*P*L(H1)*P*L(H1)*S*L(H1)*S*S*L(H1)*S*H1 + 3/20*P*
+         L(H1)*P*L(H1)*S*L(H1)*S*S*S*L(H1)*P*H1 + 2/5*P*L(H1)*P*L(H1)*S*L(H1)*
+         S*S*H2 + 1/5*P*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*S*S*S*H1 + 1/5*P*L(H1)*P
+         *L(H1)*S*L(H2)*S*S*H1 - 1/5*P*L(H1)*P*L(H1)*S*S*L(H1)*S*L(H1)*S*H1 + 
+         3/20*P*L(H1)*P*L(H1)*S*S*L(H1)*S*S*L(H1)*P*H1 + 2/5*P*L(H1)*P*L(H1)*S
+         *S*L(H1)*S*H2 + 1/5*P*L(H1)*P*L(H1)*S*S*L(H2)*S*H1 + 1/10*P*L(H1)*P*
+         L(H1)*S*S*S*L(H1)*S*L(H1)*P*H1 + 2/15*P*L(H1)*P*L(H1)*S*S*S*L(H1)*P*
+         L(H1)*S*H1 - 4/15*P*L(H1)*P*L(H1)*S*S*S*L(H1)*P*H2 - 1/10*P*L(H1)*P*
+         L(H1)*S*S*S*L(H2)*P*H1 - 3/5*P*L(H1)*P*L(H1)*S*S*H3 + 1/5*P*L(H1)*P*
+         L(H1)*P*L(H1)*S*L(H1)*S*S*S*H1 + 1/5*P*L(H1)*P*L(H1)*P*L(H1)*S*S*L(H1
+         )*S*S*H1 + 1/5*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*L(H1)*S*H1 - 3/20*P*L(H1
+         )*P*L(H1)*P*L(H1)*S*S*S*S*L(H1)*P*H1 - 2/5*P*L(H1)*P*L(H1)*P*L(H1)*S*
+         S*S*H2 - 1/5*P*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*S*H1 - 1/5*P*L(H1)
+         *P*L(H1)*P*L(H2)*S*S*S*H1 + 1/5*P*L(H1)*P*L(H2)*S*L(H1)*S*S*H1 + 1/5*
+         P*L(H1)*P*L(H2)*S*S*L(H1)*S*H1 - 3/20*P*L(H1)*P*L(H2)*S*S*S*L(H1)*P*
+         H1 - 1/5*P*L(H1)*P*L(H2)*P*L(H1)*S*S*S*H1 - 1/5*P*L(H1)*P*L(H3)*S*S*
+         H1 - 1/5*P*L(H2)*S*L(H1)*S*L(H1)*S*H1 + 3/20*P*L(H2)*S*L(H1)*S*S*L(H1
+         )*P*H1 + 2/5*P*L(H2)*S*L(H1)*S*H2 + 1/5*P*L(H2)*S*L(H2)*S*H1 + 1/10*P
+         *L(H2)*S*S*L(H1)*S*L(H1)*P*H1 + 2/15*P*L(H2)*S*S*L(H1)*P*L(H1)*S*H1
+          - 4/15*P*L(H2)*S*S*L(H1)*P*H2 - 1/10*P*L(H2)*S*S*L(H2)*P*H1 - 3/5*P*
+         L(H2)*S*H3 + 1/5*P*L(H2)*P*L(H1)*S*L(H1)*S*S*H1 + 1/5*P*L(H2)*P*L(H1)
+         *S*S*L(H1)*S*H1 - 3/20*P*L(H2)*P*L(H1)*S*S*S*L(H1)*P*H1 - 2/5*P*L(H2)
+         *P*L(H1)*S*S*H2 - 1/5*P*L(H2)*P*L(H1)*P*L(H1)*S*S*S*H1 - 1/5*P*L(H2)*
+         P*L(H2)*S*S*H1 + 1/5*P*L(H3)*S*L(H1)*S*H1 - 3/20*P*L(H3)*S*S*L(H1)*P*
+         H1 - 2/5*P*L(H3)*S*H2 - 1/5*P*L(H4)*S*H1 + P*H5 )
+
+       + alpha^6 * (  - 1/6*P*L(H1)*S*L(H1)*S*L(H1)*S*L(H1)*S*L(H1)*S*H1 + 2/
+         15*P*L(H1)*S*L(H1)*S*L(H1)*S*L(H1)*S*S*L(H1)*P*H1 + 1/3*P*L(H1)*S*L(
+         H1)*S*L(H1)*S*L(H1)*S*H2 + 1/6*P*L(H1)*S*L(H1)*S*L(H1)*S*L(H2)*S*H1
+          + 1/10*P*L(H1)*S*L(H1)*S*L(H1)*S*S*L(H1)*S*L(H1)*P*H1 + 1/8*P*L(H1)*
+         S*L(H1)*S*L(H1)*S*S*L(H1)*P*L(H1)*S*H1 - 1/4*P*L(H1)*S*L(H1)*S*L(H1)*
+         S*S*L(H1)*P*H2 - 1/10*P*L(H1)*S*L(H1)*S*L(H1)*S*S*L(H2)*P*H1 - 1/2*P*
+         L(H1)*S*L(H1)*S*L(H1)*S*H3 + 1/6*P*L(H1)*S*L(H1)*S*L(H1)*P*L(H1)*S*L(
+         H1)*S*S*H1 + 1/6*P*L(H1)*S*L(H1)*S*L(H1)*P*L(H1)*S*S*L(H1)*S*H1 - 2/
+         15*P*L(H1)*S*L(H1)*S*L(H1)*P*L(H1)*S*S*S*L(H1)*P*H1 - 1/3*P*L(H1)*S*
+         L(H1)*S*L(H1)*P*L(H1)*S*S*H2 - 1/6*P*L(H1)*S*L(H1)*S*L(H1)*P*L(H1)*P*
+         L(H1)*S*S*S*H1 - 1/6*P*L(H1)*S*L(H1)*S*L(H1)*P*L(H2)*S*S*H1 + 1/6*P*
+         L(H1)*S*L(H1)*S*L(H2)*S*L(H1)*S*H1 - 2/15*P*L(H1)*S*L(H1)*S*L(H2)*S*S
+         *L(H1)*P*H1 - 1/3*P*L(H1)*S*L(H1)*S*L(H2)*S*H2 - 1/6*P*L(H1)*S*L(H1)*
+         S*L(H3)*S*H1 + 1/15*P*L(H1)*S*L(H1)*S*S*L(H1)*S*L(H1)*S*L(H1)*P*H1 + 
+         1/12*P*L(H1)*S*L(H1)*S*S*L(H1)*S*L(H1)*P*L(H1)*S*H1 - 1/6*P*L(H1)*S*
+         L(H1)*S*S*L(H1)*S*L(H1)*P*H2 - 1/15*P*L(H1)*S*L(H1)*S*S*L(H1)*S*L(H2)
+         *P*H1 + 1/9*P*L(H1)*S*L(H1)*S*S*L(H1)*P*L(H1)*S*L(H1)*S*H1 - 4/45*P*
+         L(H1)*S*L(H1)*S*S*L(H1)*P*L(H1)*S*S*L(H1)*P*H1 - 1/3*P*L(H1)*S*L(H1)*
+         S*S*L(H1)*P*L(H1)*S*H2 + 1/3*P*L(H1)*S*L(H1)*S*S*L(H1)*P*H3 - 1/15*P*
+         L(H1)*S*L(H1)*S*S*L(H2)*S*L(H1)*P*H1 - 1/12*P*L(H1)*S*L(H1)*S*S*L(H2)
+         *P*L(H1)*S*H1 + 1/6*P*L(H1)*S*L(H1)*S*S*L(H2)*P*H2 + 1/15*P*L(H1)*S*
+         L(H1)*S*S*L(H3)*P*H1 - 1/15*P*L(H1)*S*L(H1)*S*S*S*L(H1)*P*L(H1)*S*L(
+         H1)*P*H1 - 1/12*P*L(H1)*S*L(H1)*S*S*S*L(H1)*P*L(H1)*P*L(H1)*S*H1 + 1/
+         6*P*L(H1)*S*L(H1)*S*S*S*L(H1)*P*L(H1)*P*H2 + 1/15*P*L(H1)*S*L(H1)*S*S
+         *S*L(H1)*P*L(H2)*P*H1 + 2/3*P*L(H1)*S*L(H1)*S*H4 + 1/6*P*L(H1)*S*L(H1
+         )*P*L(H1)*S*L(H1)*S*L(H1)*S*S*H1 + 1/6*P*L(H1)*S*L(H1)*P*L(H1)*S*L(H1
+         )*S*S*L(H1)*S*H1 - 2/15*P*L(H1)*S*L(H1)*P*L(H1)*S*L(H1)*S*S*S*L(H1)*P
+         *H1 - 1/3*P*L(H1)*S*L(H1)*P*L(H1)*S*L(H1)*S*S*H2 - 1/6*P*L(H1)*S*L(H1
+         )*P*L(H1)*S*L(H1)*P*L(H1)*S*S*S*H1 - 1/6*P*L(H1)*S*L(H1)*P*L(H1)*S*L(
+         H2)*S*S*H1 + 1/6*P*L(H1)*S*L(H1)*P*L(H1)*S*S*L(H1)*S*L(H1)*S*H1 - 2/
+         15*P*L(H1)*S*L(H1)*P*L(H1)*S*S*L(H1)*S*S*L(H1)*P*H1 - 1/3*P*L(H1)*S*
+         L(H1)*P*L(H1)*S*S*L(H1)*S*H2 - 1/6*P*L(H1)*S*L(H1)*P*L(H1)*S*S*L(H2)*
+         S*H1 - 1/10*P*L(H1)*S*L(H1)*P*L(H1)*S*S*S*L(H1)*S*L(H1)*P*H1 - 1/8*P*
+         L(H1)*S*L(H1)*P*L(H1)*S*S*S*L(H1)*P*L(H1)*S*H1 + 1/4*P*L(H1)*S*L(H1)*
+         P*L(H1)*S*S*S*L(H1)*P*H2 + 1/10*P*L(H1)*S*L(H1)*P*L(H1)*S*S*S*L(H2)*P
+         *H1 + 1/2*P*L(H1)*S*L(H1)*P*L(H1)*S*S*H3 - 1/6*P*L(H1)*S*L(H1)*P*L(H1
+         )*P*L(H1)*S*L(H1)*S*S*S*H1 - 1/6*P*L(H1)*S*L(H1)*P*L(H1)*P*L(H1)*S*S*
+         L(H1)*S*S*H1 - 1/6*P*L(H1)*S*L(H1)*P*L(H1)*P*L(H1)*S*S*S*L(H1)*S*H1
+          + 2/15*P*L(H1)*S*L(H1)*P*L(H1)*P*L(H1)*S*S*S*S*L(H1)*P*H1 + 1/3*P*L(
+         H1)*S*L(H1)*P*L(H1)*P*L(H1)*S*S*S*H2 + 1/6*P*L(H1)*S*L(H1)*P*L(H1)*P*
+         L(H1)*P*L(H1)*S*S*S*S*H1 + 1/6*P*L(H1)*S*L(H1)*P*L(H1)*P*L(H2)*S*S*S*
+         H1 - 1/6*P*L(H1)*S*L(H1)*P*L(H2)*S*L(H1)*S*S*H1 - 1/6*P*L(H1)*S*L(H1)
+         *P*L(H2)*S*S*L(H1)*S*H1 + 2/15*P*L(H1)*S*L(H1)*P*L(H2)*S*S*S*L(H1)*P*
+         H1 + 1/6*P*L(H1)*S*L(H1)*P*L(H2)*P*L(H1)*S*S*S*H1 + 1/6*P*L(H1)*S*L(
+         H1)*P*L(H3)*S*S*H1 + 1/6*P*L(H1)*S*L(H2)*S*L(H1)*S*L(H1)*S*H1 - 2/15*
+         P*L(H1)*S*L(H2)*S*L(H1)*S*S*L(H1)*P*H1 - 1/3*P*L(H1)*S*L(H2)*S*L(H1)*
+         S*H2 - 1/6*P*L(H1)*S*L(H2)*S*L(H2)*S*H1 - 1/10*P*L(H1)*S*L(H2)*S*S*L(
+         H1)*S*L(H1)*P*H1 - 1/8*P*L(H1)*S*L(H2)*S*S*L(H1)*P*L(H1)*S*H1 + 1/4*P
+         *L(H1)*S*L(H2)*S*S*L(H1)*P*H2 + 1/10*P*L(H1)*S*L(H2)*S*S*L(H2)*P*H1
+          + 1/2*P*L(H1)*S*L(H2)*S*H3 - 1/6*P*L(H1)*S*L(H2)*P*L(H1)*S*L(H1)*S*S
+         *H1 - 1/6*P*L(H1)*S*L(H2)*P*L(H1)*S*S*L(H1)*S*H1 + 2/15*P*L(H1)*S*L(
+         H2)*P*L(H1)*S*S*S*L(H1)*P*H1 + 1/3*P*L(H1)*S*L(H2)*P*L(H1)*S*S*H2 + 1/
+         6*P*L(H1)*S*L(H2)*P*L(H1)*P*L(H1)*S*S*S*H1 + 1/6*P*L(H1)*S*L(H2)*P*L(
+         H2)*S*S*H1 - 1/6*P*L(H1)*S*L(H3)*S*L(H1)*S*H1 + 2/15*P*L(H1)*S*L(H3)*
+         S*S*L(H1)*P*H1 + 1/3*P*L(H1)*S*L(H3)*S*H2 + 1/6*P*L(H1)*S*L(H4)*S*H1
+          + 1/30*P*L(H1)*S*S*L(H1)*S*L(H1)*S*L(H1)*S*L(H1)*P*H1 + 1/24*P*L(H1)
+         *S*S*L(H1)*S*L(H1)*S*L(H1)*P*L(H1)*S*H1 - 1/12*P*L(H1)*S*S*L(H1)*S*L(
+         H1)*S*L(H1)*P*H2 - 1/30*P*L(H1)*S*S*L(H1)*S*L(H1)*S*L(H2)*P*H1 + 1/18
+         *P*L(H1)*S*S*L(H1)*S*L(H1)*P*L(H1)*S*L(H1)*S*H1 - 2/45*P*L(H1)*S*S*L(
+         H1)*S*L(H1)*P*L(H1)*S*S*L(H1)*P*H1 - 1/6*P*L(H1)*S*S*L(H1)*S*L(H1)*P*
+         L(H1)*S*H2 + 1/6*P*L(H1)*S*S*L(H1)*S*L(H1)*P*H3 - 1/30*P*L(H1)*S*S*L(
+         H1)*S*L(H2)*S*L(H1)*P*H1 - 1/24*P*L(H1)*S*S*L(H1)*S*L(H2)*P*L(H1)*S*
+         H1 + 1/12*P*L(H1)*S*S*L(H1)*S*L(H2)*P*H2 + 1/30*P*L(H1)*S*S*L(H1)*S*
+         L(H3)*P*H1 - 1/30*P*L(H1)*S*S*L(H1)*S*S*L(H1)*P*L(H1)*S*L(H1)*P*H1 - 
+         1/24*P*L(H1)*S*S*L(H1)*S*S*L(H1)*P*L(H1)*P*L(H1)*S*H1 + 1/12*P*L(H1)*
+         S*S*L(H1)*S*S*L(H1)*P*L(H1)*P*H2 + 1/30*P*L(H1)*S*S*L(H1)*S*S*L(H1)*P
+         *L(H2)*P*H1 + 1/12*P*L(H1)*S*S*L(H1)*P*L(H1)*S*L(H1)*S*L(H1)*S*H1 - 1/
+         15*P*L(H1)*S*S*L(H1)*P*L(H1)*S*L(H1)*S*S*L(H1)*P*H1 - 1/6*P*L(H1)*S*S
+         *L(H1)*P*L(H1)*S*L(H1)*S*H2 - 1/12*P*L(H1)*S*S*L(H1)*P*L(H1)*S*L(H2)*
+         S*H1 - 1/20*P*L(H1)*S*S*L(H1)*P*L(H1)*S*S*L(H1)*S*L(H1)*P*H1 - 1/16*P
+         *L(H1)*S*S*L(H1)*P*L(H1)*S*S*L(H1)*P*L(H1)*S*H1 + 1/8*P*L(H1)*S*S*L(
+         H1)*P*L(H1)*S*S*L(H1)*P*H2 + 1/20*P*L(H1)*S*S*L(H1)*P*L(H1)*S*S*L(H2)
+         *P*H1 + 1/3*P*L(H1)*S*S*L(H1)*P*L(H1)*S*H3 - 1/12*P*L(H1)*S*S*L(H1)*P
+         *L(H1)*P*L(H1)*S*L(H1)*S*S*H1 - 1/12*P*L(H1)*S*S*L(H1)*P*L(H1)*P*L(H1
+         )*S*S*L(H1)*S*H1 + 1/15*P*L(H1)*S*S*L(H1)*P*L(H1)*P*L(H1)*S*S*S*L(H1)
+         *P*H1 + 1/6*P*L(H1)*S*S*L(H1)*P*L(H1)*P*L(H1)*S*S*H2 + 1/12*P*L(H1)*S
+         *S*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*H1 + 1/12*P*L(H1)*S*S*L(H1)*P*
+         L(H1)*P*L(H2)*S*S*H1 - 1/12*P*L(H1)*S*S*L(H1)*P*L(H2)*S*L(H1)*S*H1 + 
+         1/15*P*L(H1)*S*S*L(H1)*P*L(H2)*S*S*L(H1)*P*H1 + 1/6*P*L(H1)*S*S*L(H1)
+         *P*L(H2)*S*H2 - 1/3*P*L(H1)*S*S*L(H1)*P*H4 - 1/30*P*L(H1)*S*S*L(H2)*S
+         *L(H1)*S*L(H1)*P*H1 - 1/24*P*L(H1)*S*S*L(H2)*S*L(H1)*P*L(H1)*S*H1 + 1/
+         12*P*L(H1)*S*S*L(H2)*S*L(H1)*P*H2 + 1/30*P*L(H1)*S*S*L(H2)*S*L(H2)*P*
+         H1 - 1/18*P*L(H1)*S*S*L(H2)*P*L(H1)*S*L(H1)*S*H1 + 2/45*P*L(H1)*S*S*
+         L(H2)*P*L(H1)*S*S*L(H1)*P*H1 + 1/6*P*L(H1)*S*S*L(H2)*P*L(H1)*S*H2 - 1/
+         6*P*L(H1)*S*S*L(H2)*P*H3 + 1/30*P*L(H1)*S*S*L(H3)*S*L(H1)*P*H1 + 1/24
+         *P*L(H1)*S*S*L(H3)*P*L(H1)*S*H1 - 1/12*P*L(H1)*S*S*L(H3)*P*H2 - 1/30*
+         P*L(H1)*S*S*L(H4)*P*H1 - 1/30*P*L(H1)*S*S*S*L(H1)*S*L(H1)*P*L(H1)*S*
+         L(H1)*P*H1 - 1/24*P*L(H1)*S*S*S*L(H1)*S*L(H1)*P*L(H1)*P*L(H1)*S*H1 + 
+         1/12*P*L(H1)*S*S*S*L(H1)*S*L(H1)*P*L(H1)*P*H2 + 1/30*P*L(H1)*S*S*S*L(
+         H1)*S*L(H1)*P*L(H2)*P*H1 - 1/30*P*L(H1)*S*S*S*L(H1)*P*L(H1)*S*L(H1)*S
+         *L(H1)*P*H1 - 1/24*P*L(H1)*S*S*S*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*S*H1
+          + 1/12*P*L(H1)*S*S*S*L(H1)*P*L(H1)*S*L(H1)*P*H2 + 1/30*P*L(H1)*S*S*S
+         *L(H1)*P*L(H1)*S*L(H2)*P*H1 - 1/18*P*L(H1)*S*S*S*L(H1)*P*L(H1)*P*L(H1
+         )*S*L(H1)*S*H1 + 2/45*P*L(H1)*S*S*S*L(H1)*P*L(H1)*P*L(H1)*S*S*L(H1)*P
+         *H1 + 1/6*P*L(H1)*S*S*S*L(H1)*P*L(H1)*P*L(H1)*S*H2 - 1/6*P*L(H1)*S*S*
+         S*L(H1)*P*L(H1)*P*H3 + 1/30*P*L(H1)*S*S*S*L(H1)*P*L(H2)*S*L(H1)*P*H1
+          + 1/24*P*L(H1)*S*S*S*L(H1)*P*L(H2)*P*L(H1)*S*H1 - 1/30*P*L(H1)*S*S*S
+         *L(H1)*P*L(H3)*P*H1 + 1/30*P*L(H1)*S*S*S*L(H2)*P*L(H1)*S*L(H1)*P*H1
+          + 1/24*P*L(H1)*S*S*S*L(H2)*P*L(H1)*P*L(H1)*S*H1 - 1/12*P*L(H1)*S*S*S
+         *L(H2)*P*L(H1)*P*H2 - 1/30*P*L(H1)*S*S*S*L(H2)*P*L(H2)*P*H1 + 1/30*P*
+         L(H1)*S*S*S*S*L(H1)*P*L(H1)*P*L(H1)*S*L(H1)*P*H1 + 1/24*P*L(H1)*S*S*S
+         *S*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S*H1 - 1/12*P*L(H1)*S*S*S*S*L(H1)*P*
+         L(H1)*P*L(H1)*P*H2 - 1/30*P*L(H1)*S*S*S*S*L(H1)*P*L(H1)*P*L(H2)*P*H1
+          - 5/6*P*L(H1)*S*H5 + 1/6*P*L(H1)*P*L(H1)*S*L(H1)*S*L(H1)*S*L(H1)*S*S
+         *H1 + 1/6*P*L(H1)*P*L(H1)*S*L(H1)*S*L(H1)*S*S*L(H1)*S*H1 - 2/15*P*L(
+         H1)*P*L(H1)*S*L(H1)*S*L(H1)*S*S*S*L(H1)*P*H1 - 1/3*P*L(H1)*P*L(H1)*S*
+         L(H1)*S*L(H1)*S*S*H2 - 1/6*P*L(H1)*P*L(H1)*S*L(H1)*S*L(H1)*P*L(H1)*S*
+         S*S*H1 - 1/6*P*L(H1)*P*L(H1)*S*L(H1)*S*L(H2)*S*S*H1 + 1/6*P*L(H1)*P*
+         L(H1)*S*L(H1)*S*S*L(H1)*S*L(H1)*S*H1 - 2/15*P*L(H1)*P*L(H1)*S*L(H1)*S
+         *S*L(H1)*S*S*L(H1)*P*H1 - 1/3*P*L(H1)*P*L(H1)*S*L(H1)*S*S*L(H1)*S*H2
+          - 1/6*P*L(H1)*P*L(H1)*S*L(H1)*S*S*L(H2)*S*H1 - 1/10*P*L(H1)*P*L(H1)*
+         S*L(H1)*S*S*S*L(H1)*S*L(H1)*P*H1 - 1/8*P*L(H1)*P*L(H1)*S*L(H1)*S*S*S*
+         L(H1)*P*L(H1)*S*H1 + 1/4*P*L(H1)*P*L(H1)*S*L(H1)*S*S*S*L(H1)*P*H2 + 1/
+         10*P*L(H1)*P*L(H1)*S*L(H1)*S*S*S*L(H2)*P*H1 + 1/2*P*L(H1)*P*L(H1)*S*
+         L(H1)*S*S*H3 - 1/6*P*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*S*L(H1)*S*S*S*H1
+          - 1/6*P*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*S*S*L(H1)*S*S*H1 - 1/6*P*L(H1)
+         *P*L(H1)*S*L(H1)*P*L(H1)*S*S*S*L(H1)*S*H1 + 2/15*P*L(H1)*P*L(H1)*S*L(
+         H1)*P*L(H1)*S*S*S*S*L(H1)*P*H1 + 1/3*P*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*
+         S*S*S*H2 + 1/6*P*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*P*L(H1)*S*S*S*S*H1 + 1/
+         6*P*L(H1)*P*L(H1)*S*L(H1)*P*L(H2)*S*S*S*H1 - 1/6*P*L(H1)*P*L(H1)*S*L(
+         H2)*S*L(H1)*S*S*H1 - 1/6*P*L(H1)*P*L(H1)*S*L(H2)*S*S*L(H1)*S*H1 + 2/
+         15*P*L(H1)*P*L(H1)*S*L(H2)*S*S*S*L(H1)*P*H1 + 1/3*P*L(H1)*P*L(H1)*S*
+         L(H2)*S*S*H2 + 1/6*P*L(H1)*P*L(H1)*S*L(H2)*P*L(H1)*S*S*S*H1 + 1/6*P*
+         L(H1)*P*L(H1)*S*L(H3)*S*S*H1 + 1/6*P*L(H1)*P*L(H1)*S*S*L(H1)*S*L(H1)*
+         S*L(H1)*S*H1 - 2/15*P*L(H1)*P*L(H1)*S*S*L(H1)*S*L(H1)*S*S*L(H1)*P*H1
+          - 1/3*P*L(H1)*P*L(H1)*S*S*L(H1)*S*L(H1)*S*H2 - 1/6*P*L(H1)*P*L(H1)*S
+         *S*L(H1)*S*L(H2)*S*H1 - 1/10*P*L(H1)*P*L(H1)*S*S*L(H1)*S*S*L(H1)*S*L(
+         H1)*P*H1 - 1/8*P*L(H1)*P*L(H1)*S*S*L(H1)*S*S*L(H1)*P*L(H1)*S*H1 + 1/4
+         *P*L(H1)*P*L(H1)*S*S*L(H1)*S*S*L(H1)*P*H2 + 1/10*P*L(H1)*P*L(H1)*S*S*
+         L(H1)*S*S*L(H2)*P*H1 + 1/2*P*L(H1)*P*L(H1)*S*S*L(H1)*S*H3 - 1/6*P*L(
+         H1)*P*L(H1)*S*S*L(H1)*P*L(H1)*S*L(H1)*S*S*H1 - 1/6*P*L(H1)*P*L(H1)*S*
+         S*L(H1)*P*L(H1)*S*S*L(H1)*S*H1 + 2/15*P*L(H1)*P*L(H1)*S*S*L(H1)*P*L(
+         H1)*S*S*S*L(H1)*P*H1 + 1/3*P*L(H1)*P*L(H1)*S*S*L(H1)*P*L(H1)*S*S*H2
+          + 1/6*P*L(H1)*P*L(H1)*S*S*L(H1)*P*L(H1)*P*L(H1)*S*S*S*H1 + 1/6*P*L(
+         H1)*P*L(H1)*S*S*L(H1)*P*L(H2)*S*S*H1 - 1/6*P*L(H1)*P*L(H1)*S*S*L(H2)*
+         S*L(H1)*S*H1 + 2/15*P*L(H1)*P*L(H1)*S*S*L(H2)*S*S*L(H1)*P*H1 + 1/3*P*
+         L(H1)*P*L(H1)*S*S*L(H2)*S*H2 + 1/6*P*L(H1)*P*L(H1)*S*S*L(H3)*S*H1 - 1/
+         15*P*L(H1)*P*L(H1)*S*S*S*L(H1)*S*L(H1)*S*L(H1)*P*H1 - 1/12*P*L(H1)*P*
+         L(H1)*S*S*S*L(H1)*S*L(H1)*P*L(H1)*S*H1 + 1/6*P*L(H1)*P*L(H1)*S*S*S*L(
+         H1)*S*L(H1)*P*H2 + 1/15*P*L(H1)*P*L(H1)*S*S*S*L(H1)*S*L(H2)*P*H1 - 1/
+         9*P*L(H1)*P*L(H1)*S*S*S*L(H1)*P*L(H1)*S*L(H1)*S*H1 + 4/45*P*L(H1)*P*
+         L(H1)*S*S*S*L(H1)*P*L(H1)*S*S*L(H1)*P*H1 + 1/3*P*L(H1)*P*L(H1)*S*S*S*
+         L(H1)*P*L(H1)*S*H2 - 1/3*P*L(H1)*P*L(H1)*S*S*S*L(H1)*P*H3 + 1/15*P*L(
+         H1)*P*L(H1)*S*S*S*L(H2)*S*L(H1)*P*H1 + 1/12*P*L(H1)*P*L(H1)*S*S*S*L(
+         H2)*P*L(H1)*S*H1 - 1/6*P*L(H1)*P*L(H1)*S*S*S*L(H2)*P*H2 - 1/15*P*L(H1
+         )*P*L(H1)*S*S*S*L(H3)*P*H1 + 1/15*P*L(H1)*P*L(H1)*S*S*S*S*L(H1)*P*L(
+         H1)*S*L(H1)*P*H1 + 1/12*P*L(H1)*P*L(H1)*S*S*S*S*L(H1)*P*L(H1)*P*L(H1)
+         *S*H1 - 1/6*P*L(H1)*P*L(H1)*S*S*S*S*L(H1)*P*L(H1)*P*H2 - 1/15*P*L(H1)
+         *P*L(H1)*S*S*S*S*L(H1)*P*L(H2)*P*H1 - 2/3*P*L(H1)*P*L(H1)*S*S*H4 - 1/
+         6*P*L(H1)*P*L(H1)*P*L(H1)*S*L(H1)*S*L(H1)*S*S*S*H1 - 1/6*P*L(H1)*P*L(
+         H1)*P*L(H1)*S*L(H1)*S*S*L(H1)*S*S*H1 - 1/6*P*L(H1)*P*L(H1)*P*L(H1)*S*
+         L(H1)*S*S*S*L(H1)*S*H1 + 2/15*P*L(H1)*P*L(H1)*P*L(H1)*S*L(H1)*S*S*S*S
+         *L(H1)*P*H1 + 1/3*P*L(H1)*P*L(H1)*P*L(H1)*S*L(H1)*S*S*S*H2 + 1/6*P*L(
+         H1)*P*L(H1)*P*L(H1)*S*L(H1)*P*L(H1)*S*S*S*S*H1 + 1/6*P*L(H1)*P*L(H1)*
+         P*L(H1)*S*L(H2)*S*S*S*H1 - 1/6*P*L(H1)*P*L(H1)*P*L(H1)*S*S*L(H1)*S*L(
+         H1)*S*S*H1 - 1/6*P*L(H1)*P*L(H1)*P*L(H1)*S*S*L(H1)*S*S*L(H1)*S*H1 + 2/
+         15*P*L(H1)*P*L(H1)*P*L(H1)*S*S*L(H1)*S*S*S*L(H1)*P*H1 + 1/3*P*L(H1)*P
+         *L(H1)*P*L(H1)*S*S*L(H1)*S*S*H2 + 1/6*P*L(H1)*P*L(H1)*P*L(H1)*S*S*L(
+         H1)*P*L(H1)*S*S*S*H1 + 1/6*P*L(H1)*P*L(H1)*P*L(H1)*S*S*L(H2)*S*S*H1
+          - 1/6*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*L(H1)*S*L(H1)*S*H1 + 2/15*P*L(H1
+         )*P*L(H1)*P*L(H1)*S*S*S*L(H1)*S*S*L(H1)*P*H1 + 1/3*P*L(H1)*P*L(H1)*P*
+         L(H1)*S*S*S*L(H1)*S*H2 + 1/6*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*L(H2)*S*H1
+          + 1/10*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*S*L(H1)*S*L(H1)*P*H1 + 1/8*P*L(
+         H1)*P*L(H1)*P*L(H1)*S*S*S*S*L(H1)*P*L(H1)*S*H1 - 1/4*P*L(H1)*P*L(H1)*
+         P*L(H1)*S*S*S*S*L(H1)*P*H2 - 1/10*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*S*L(
+         H2)*P*H1 - 1/2*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*H3 + 1/6*P*L(H1)*P*L(H1)
+         *P*L(H1)*P*L(H1)*S*L(H1)*S*S*S*S*H1 + 1/6*P*L(H1)*P*L(H1)*P*L(H1)*P*
+         L(H1)*S*S*L(H1)*S*S*S*H1 + 1/6*P*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*
+         L(H1)*S*S*H1 + 1/6*P*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*S*L(H1)*S*H1
+          - 2/15*P*L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*S*S*L(H1)*P*H1 - 1/3*P*
+         L(H1)*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*S*H2 - 1/6*P*L(H1)*P*L(H1)*P*L(H1
+         )*P*L(H1)*P*L(H1)*S*S*S*S*S*H1 - 1/6*P*L(H1)*P*L(H1)*P*L(H1)*P*L(H2)*
+         S*S*S*S*H1 + 1/6*P*L(H1)*P*L(H1)*P*L(H2)*S*L(H1)*S*S*S*H1 + 1/6*P*L(
+         H1)*P*L(H1)*P*L(H2)*S*S*L(H1)*S*S*H1 + 1/6*P*L(H1)*P*L(H1)*P*L(H2)*S*
+         S*S*L(H1)*S*H1 - 2/15*P*L(H1)*P*L(H1)*P*L(H2)*S*S*S*S*L(H1)*P*H1 - 1/
+         3*P*L(H1)*P*L(H1)*P*L(H2)*S*S*S*H2 - 1/6*P*L(H1)*P*L(H1)*P*L(H2)*P*L(
+         H1)*S*S*S*S*H1 - 1/6*P*L(H1)*P*L(H1)*P*L(H3)*S*S*S*H1 - 1/6*P*L(H1)*P
+         *L(H2)*S*L(H1)*S*L(H1)*S*S*H1 - 1/6*P*L(H1)*P*L(H2)*S*L(H1)*S*S*L(H1)
+         *S*H1 + 2/15*P*L(H1)*P*L(H2)*S*L(H1)*S*S*S*L(H1)*P*H1 + 1/3*P*L(H1)*P
+         *L(H2)*S*L(H1)*S*S*H2 + 1/6*P*L(H1)*P*L(H2)*S*L(H1)*P*L(H1)*S*S*S*H1
+          + 1/6*P*L(H1)*P*L(H2)*S*L(H2)*S*S*H1 - 1/6*P*L(H1)*P*L(H2)*S*S*L(H1)
+         *S*L(H1)*S*H1 + 2/15*P*L(H1)*P*L(H2)*S*S*L(H1)*S*S*L(H1)*P*H1 + 1/3*P
+         *L(H1)*P*L(H2)*S*S*L(H1)*S*H2 + 1/6*P*L(H1)*P*L(H2)*S*S*L(H2)*S*H1 + 
+         1/10*P*L(H1)*P*L(H2)*S*S*S*L(H1)*S*L(H1)*P*H1 + 1/8*P*L(H1)*P*L(H2)*S
+         *S*S*L(H1)*P*L(H1)*S*H1 - 1/4*P*L(H1)*P*L(H2)*S*S*S*L(H1)*P*H2 - 1/10
+         *P*L(H1)*P*L(H2)*S*S*S*L(H2)*P*H1 - 1/2*P*L(H1)*P*L(H2)*S*S*H3 + 1/6*
+         P*L(H1)*P*L(H2)*P*L(H1)*S*L(H1)*S*S*S*H1 + 1/6*P*L(H1)*P*L(H2)*P*L(H1
+         )*S*S*L(H1)*S*S*H1 + 1/6*P*L(H1)*P*L(H2)*P*L(H1)*S*S*S*L(H1)*S*H1 - 2/
+         15*P*L(H1)*P*L(H2)*P*L(H1)*S*S*S*S*L(H1)*P*H1 - 1/3*P*L(H1)*P*L(H2)*P
+         *L(H1)*S*S*S*H2 - 1/6*P*L(H1)*P*L(H2)*P*L(H1)*P*L(H1)*S*S*S*S*H1 - 1/
+         6*P*L(H1)*P*L(H2)*P*L(H2)*S*S*S*H1 + 1/6*P*L(H1)*P*L(H3)*S*L(H1)*S*S*
+         H1 + 1/6*P*L(H1)*P*L(H3)*S*S*L(H1)*S*H1 - 2/15*P*L(H1)*P*L(H3)*S*S*S*
+         L(H1)*P*H1 - 1/3*P*L(H1)*P*L(H3)*S*S*H2 - 1/6*P*L(H1)*P*L(H3)*P*L(H1)
+         *S*S*S*H1 - 1/6*P*L(H1)*P*L(H4)*S*S*H1 + 1/6*P*L(H2)*S*L(H1)*S*L(H1)*
+         S*L(H1)*S*H1 - 2/15*P*L(H2)*S*L(H1)*S*L(H1)*S*S*L(H1)*P*H1 - 1/3*P*L(
+         H2)*S*L(H1)*S*L(H1)*S*H2 - 1/6*P*L(H2)*S*L(H1)*S*L(H2)*S*H1 - 1/10*P*
+         L(H2)*S*L(H1)*S*S*L(H1)*S*L(H1)*P*H1 - 1/8*P*L(H2)*S*L(H1)*S*S*L(H1)*
+         P*L(H1)*S*H1 + 1/4*P*L(H2)*S*L(H1)*S*S*L(H1)*P*H2 + 1/10*P*L(H2)*S*L(
+         H1)*S*S*L(H2)*P*H1 + 1/2*P*L(H2)*S*L(H1)*S*H3 - 1/6*P*L(H2)*S*L(H1)*P
+         *L(H1)*S*L(H1)*S*S*H1 - 1/6*P*L(H2)*S*L(H1)*P*L(H1)*S*S*L(H1)*S*H1 + 
+         2/15*P*L(H2)*S*L(H1)*P*L(H1)*S*S*S*L(H1)*P*H1 + 1/3*P*L(H2)*S*L(H1)*P
+         *L(H1)*S*S*H2 + 1/6*P*L(H2)*S*L(H1)*P*L(H1)*P*L(H1)*S*S*S*H1 + 1/6*P*
+         L(H2)*S*L(H1)*P*L(H2)*S*S*H1 - 1/6*P*L(H2)*S*L(H2)*S*L(H1)*S*H1 + 2/
+         15*P*L(H2)*S*L(H2)*S*S*L(H1)*P*H1 + 1/3*P*L(H2)*S*L(H2)*S*H2 + 1/6*P*
+         L(H2)*S*L(H3)*S*H1 - 1/15*P*L(H2)*S*S*L(H1)*S*L(H1)*S*L(H1)*P*H1 - 1/
+         12*P*L(H2)*S*S*L(H1)*S*L(H1)*P*L(H1)*S*H1 + 1/6*P*L(H2)*S*S*L(H1)*S*
+         L(H1)*P*H2 + 1/15*P*L(H2)*S*S*L(H1)*S*L(H2)*P*H1 - 1/9*P*L(H2)*S*S*L(
+         H1)*P*L(H1)*S*L(H1)*S*H1 + 4/45*P*L(H2)*S*S*L(H1)*P*L(H1)*S*S*L(H1)*P
+         *H1 + 1/3*P*L(H2)*S*S*L(H1)*P*L(H1)*S*H2 - 1/3*P*L(H2)*S*S*L(H1)*P*H3
+          + 1/15*P*L(H2)*S*S*L(H2)*S*L(H1)*P*H1 + 1/12*P*L(H2)*S*S*L(H2)*P*L(
+         H1)*S*H1 - 1/6*P*L(H2)*S*S*L(H2)*P*H2 - 1/15*P*L(H2)*S*S*L(H3)*P*H1
+          + 1/15*P*L(H2)*S*S*S*L(H1)*P*L(H1)*S*L(H1)*P*H1 + 1/12*P*L(H2)*S*S*S
+         *L(H1)*P*L(H1)*P*L(H1)*S*H1 - 1/6*P*L(H2)*S*S*S*L(H1)*P*L(H1)*P*H2 - 
+         1/15*P*L(H2)*S*S*S*L(H1)*P*L(H2)*P*H1 - 2/3*P*L(H2)*S*H4 - 1/6*P*L(H2
+         )*P*L(H1)*S*L(H1)*S*L(H1)*S*S*H1 - 1/6*P*L(H2)*P*L(H1)*S*L(H1)*S*S*L(
+         H1)*S*H1 + 2/15*P*L(H2)*P*L(H1)*S*L(H1)*S*S*S*L(H1)*P*H1 + 1/3*P*L(H2
+         )*P*L(H1)*S*L(H1)*S*S*H2 + 1/6*P*L(H2)*P*L(H1)*S*L(H1)*P*L(H1)*S*S*S*
+         H1 + 1/6*P*L(H2)*P*L(H1)*S*L(H2)*S*S*H1 - 1/6*P*L(H2)*P*L(H1)*S*S*L(
+         H1)*S*L(H1)*S*H1 + 2/15*P*L(H2)*P*L(H1)*S*S*L(H1)*S*S*L(H1)*P*H1 + 1/
+         3*P*L(H2)*P*L(H1)*S*S*L(H1)*S*H2 + 1/6*P*L(H2)*P*L(H1)*S*S*L(H2)*S*H1
+          + 1/10*P*L(H2)*P*L(H1)*S*S*S*L(H1)*S*L(H1)*P*H1 + 1/8*P*L(H2)*P*L(H1
+         )*S*S*S*L(H1)*P*L(H1)*S*H1 - 1/4*P*L(H2)*P*L(H1)*S*S*S*L(H1)*P*H2 - 1/
+         10*P*L(H2)*P*L(H1)*S*S*S*L(H2)*P*H1 - 1/2*P*L(H2)*P*L(H1)*S*S*H3 + 1/
+         6*P*L(H2)*P*L(H1)*P*L(H1)*S*L(H1)*S*S*S*H1 + 1/6*P*L(H2)*P*L(H1)*P*L(
+         H1)*S*S*L(H1)*S*S*H1 + 1/6*P*L(H2)*P*L(H1)*P*L(H1)*S*S*S*L(H1)*S*H1
+          - 2/15*P*L(H2)*P*L(H1)*P*L(H1)*S*S*S*S*L(H1)*P*H1 - 1/3*P*L(H2)*P*L(
+         H1)*P*L(H1)*S*S*S*H2 - 1/6*P*L(H2)*P*L(H1)*P*L(H1)*P*L(H1)*S*S*S*S*H1
+          - 1/6*P*L(H2)*P*L(H1)*P*L(H2)*S*S*S*H1 + 1/6*P*L(H2)*P*L(H2)*S*L(H1)
+         *S*S*H1 + 1/6*P*L(H2)*P*L(H2)*S*S*L(H1)*S*H1 - 2/15*P*L(H2)*P*L(H2)*S
+         *S*S*L(H1)*P*H1 - 1/6*P*L(H2)*P*L(H2)*P*L(H1)*S*S*S*H1 - 1/6*P*L(H2)*
+         P*L(H3)*S*S*H1 - 1/6*P*L(H3)*S*L(H1)*S*L(H1)*S*H1 + 2/15*P*L(H3)*S*L(
+         H1)*S*S*L(H1)*P*H1 + 1/3*P*L(H3)*S*L(H1)*S*H2 + 1/6*P*L(H3)*S*L(H2)*S
+         *H1 + 1/10*P*L(H3)*S*S*L(H1)*S*L(H1)*P*H1 + 1/8*P*L(H3)*S*S*L(H1)*P*
+         L(H1)*S*H1 - 1/4*P*L(H3)*S*S*L(H1)*P*H2 - 1/10*P*L(H3)*S*S*L(H2)*P*H1
+          - 1/2*P*L(H3)*S*H3 + 1/6*P*L(H3)*P*L(H1)*S*L(H1)*S*S*H1 + 1/6*P*L(H3
+         )*P*L(H1)*S*S*L(H1)*S*H1 - 2/15*P*L(H3)*P*L(H1)*S*S*S*L(H1)*P*H1 - 1/
+         3*P*L(H3)*P*L(H1)*S*S*H2 - 1/6*P*L(H3)*P*L(H1)*P*L(H1)*S*S*S*H1 - 1/6
+         *P*L(H3)*P*L(H2)*S*S*H1 + 1/6*P*L(H4)*S*L(H1)*S*H1 - 2/15*P*L(H4)*S*S
+         *L(H1)*P*H1 - 1/3*P*L(H4)*S*H2 - 1/6*P*L(H5)*S*H1 + P*H6 )
+
+       + H0;
+
+  6.14 sec out of 6.19 sec
