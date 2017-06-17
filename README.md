@@ -32,7 +32,7 @@ II. Notations:
  P and S is unperturbed averaging and integrating operators P_H0 and S_H0.
  L(S,F) means L_{SF} and so on.
 
-* Lines beginning with the asterisk are comments.
+ * Lines beginning with the asterisk  are comments.
 
  In order to make the output compact, demonstrations usually were performed  up to o(alpha^10). 
  If needed, the MAXORDER variable can be set to the desired value.
